@@ -3,22 +3,22 @@
 @tailwind utilities;
 
 body {
-  background-color: #0F172A;
-  color: #F1F5F9;
+  background-color: #F7F4EF;
+  color: #1C1A17;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #1E293B; }
-::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #EDE8DF; }
+::-webkit-scrollbar-thumb { background: #C8973A; border-radius: 3px; }
 
 /* Bias label pills */
-.badge-left    { @apply bg-blue-600/20 text-blue-400 border border-blue-600/30; }
-.badge-center  { @apply bg-emerald-600/20 text-emerald-400 border border-emerald-600/30; }
-.badge-right   { @apply bg-red-600/20 text-red-400 border border-red-600/30; }
+.badge-left    { @apply bg-blue-50 text-blue-700 border border-blue-200; }
+.badge-center  { @apply bg-amber-50 text-amber-700 border border-amber-200; }
+.badge-right   { @apply bg-red-50 text-red-700 border border-red-200; }
 
 /* Framing tone pills */
-.badge-positive  { @apply bg-green-600/20 text-green-400; }
-.badge-neutral   { @apply bg-slate-600/20 text-slate-400; }
-.badge-negative  { @apply bg-orange-600/20 text-orange-400; }
+.badge-positive  { @apply bg-green-50 text-green-700; }
+.badge-neutral   { @apply bg-stone-100 text-stone-600; }
+.badge-negative  { @apply bg-orange-50 text-orange-700; }

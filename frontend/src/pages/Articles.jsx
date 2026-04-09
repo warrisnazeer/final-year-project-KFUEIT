@@ -32,14 +32,14 @@ export default function Articles() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-white mb-6">Browse Articles</h1>
+      <h1 className="text-2xl font-bold text-stone-900 mb-6">Browse Articles</h1>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-6">
         <select
           value={outlet}
           onChange={e => { setOutlet(e.target.value); setPage(0) }}
-          className="bg-brand-card border border-brand-border text-slate-300 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500"
+          className="bg-white border border-brand-border text-stone-700 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-gold-mid"
         >
           <option value="">All Outlets</option>
           {OUTLETS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -52,11 +52,11 @@ export default function Articles() {
               onClick={() => { setBiasFilter(b); setPage(0) }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
                 biasFilter === b
-                  ? b === 'Left' ? 'bg-blue-600/30 border-blue-500 text-blue-300'
-                    : b === 'Right' ? 'bg-red-600/30 border-red-500 text-red-300'
-                    : b === 'Center' ? 'bg-emerald-600/30 border-emerald-500 text-emerald-300'
-                    : 'bg-white/10 border-white/20 text-white'
-                  : 'border-brand-border text-slate-500 hover:border-slate-500 hover:text-slate-300'
+                  ? b === 'Left' ? 'bg-blue-50 border-blue-300 text-blue-700'
+                    : b === 'Right' ? 'bg-red-50 border-red-300 text-red-700'
+                    : b === 'Center' ? 'bg-amber-50 border-amber-300 text-amber-700'
+                    : 'bg-gold-light border-gold-mid text-gold-dark'
+                  : 'border-brand-border text-brand-muted hover:border-gold-mid hover:text-stone-700'
               }`}
             >
               {b || 'All Bias'}
@@ -64,16 +64,16 @@ export default function Articles() {
           ))}
         </div>
 
-        <span className="text-xs text-slate-500 self-center ml-auto">
+        <span className="text-xs text-brand-muted self-center ml-auto">
           {total.toLocaleString()} articles
         </span>
       </div>
 
       {/* Grid */}
       {loading ? (
-        <div className="text-center py-16 text-slate-500">Loading articles...</div>
+        <div className="text-center py-16 text-brand-muted">Loading articles...</div>
       ) : articles.length === 0 ? (
-        <div className="text-center py-16 text-slate-500">No articles found. Try changing filters.</div>
+        <div className="text-center py-16 text-brand-muted">No articles found. Try changing filters.</div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {articles.map(a => <ArticleCard key={a.article_id} article={a} />)}
@@ -86,17 +86,17 @@ export default function Articles() {
           <button
             onClick={() => setPage(p => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="px-4 py-2 rounded-lg bg-brand-card border border-brand-border text-sm text-slate-400 disabled:opacity-40 hover:border-slate-500"
+            className="px-4 py-2 rounded-lg bg-white border border-brand-border text-sm text-stone-600 disabled:opacity-40 hover:border-gold-mid"
           >
             ← Prev
           </button>
-          <span className="px-4 py-2 text-sm text-slate-500">
+          <span className="px-4 py-2 text-sm text-brand-muted">
             Page {page + 1} of {totalPages}
           </span>
           <button
             onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
-            className="px-4 py-2 rounded-lg bg-brand-card border border-brand-border text-sm text-slate-400 disabled:opacity-40 hover:border-slate-500"
+            className="px-4 py-2 rounded-lg bg-white border border-brand-border text-sm text-stone-600 disabled:opacity-40 hover:border-gold-mid"
           >
             Next →
           </button>

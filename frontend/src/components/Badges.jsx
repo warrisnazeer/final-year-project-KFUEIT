@@ -1,18 +1,16 @@
 /**
- * Bias 5-level color map.
- * Handles both new 5-level ("Far Left", "Lean Left", …) and
- * legacy 3-level ("Left", "Center", "Right") labels gracefully.
+ * Bias 5-level color map — light theme (white/gold palette).
  */
 export const BIAS_5 = {
   // New labels
-  "Far Left":   { bg: "bg-blue-950",  border: "border-blue-700",  text: "text-blue-300",   barBg: "bg-blue-900",   hex: "#1e3a8a" },
-  "Lean Left":  { bg: "bg-blue-900/40", border: "border-blue-700/60", text: "text-blue-400", barBg: "bg-blue-700", hex: "#1d4ed8" },
-  "Center":     { bg: "bg-slate-700/30", border: "border-slate-600/50", text: "text-slate-400", barBg: "bg-slate-500", hex: "#64748b" },
-  "Lean Right": { bg: "bg-red-900/40", border: "border-red-700/60", text: "text-red-400",    barBg: "bg-red-700",   hex: "#b91c1c" },
-  "Far Right":  { bg: "bg-red-950",   border: "border-red-800",   text: "text-red-300",    barBg: "bg-red-900",   hex: "#7f1d1d" },
+  "Far Left":   { bg: "bg-blue-50",   border: "border-blue-300",  text: "text-blue-800",   barBg: "bg-blue-600",   hex: "#1e3a8a" },
+  "Lean Left":  { bg: "bg-blue-50",   border: "border-blue-200",  text: "text-blue-700",   barBg: "bg-blue-400",   hex: "#2563eb" },
+  "Center":     { bg: "bg-amber-50",  border: "border-amber-200", text: "text-amber-800",  barBg: "bg-amber-400",  hex: "#C8973A" },
+  "Lean Right": { bg: "bg-red-50",    border: "border-red-200",   text: "text-red-700",    barBg: "bg-red-400",    hex: "#dc2626" },
+  "Far Right":  { bg: "bg-red-50",    border: "border-red-300",   text: "text-red-800",    barBg: "bg-red-600",    hex: "#7f1d1d" },
   // Legacy fallbacks
-  "Left":       { bg: "bg-blue-900/30", border: "border-blue-700/50", text: "text-blue-400", barBg: "bg-blue-700",  hex: "#1d4ed8" },
-  "Right":      { bg: "bg-red-900/30",  border: "border-red-700/50",  text: "text-red-400",  barBg: "bg-red-700",   hex: "#b91c1c" },
+  "Left":       { bg: "bg-blue-50",   border: "border-blue-200",  text: "text-blue-700",   barBg: "bg-blue-500",   hex: "#2563eb" },
+  "Right":      { bg: "bg-red-50",    border: "border-red-200",   text: "text-red-700",    barBg: "bg-red-500",    hex: "#dc2626" },
 }
 
 const BIAS_SHORT = {
@@ -29,14 +27,14 @@ const BIAS_SHORT = {
  * BiasBadge — colored pill label for 5-level bias scale.
  */
 export function BiasBadge({ label, score, short = false }) {
-  if (!label) return <span className="text-slate-600 text-xs">—</span>
+  if (!label) return <span className="text-stone-400 text-xs">—</span>
   const c = BIAS_5[label] || BIAS_5["Center"]
 
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border ${c.bg} ${c.border} ${c.text}`}>
       {short ? BIAS_SHORT[label] : label}
       {score !== undefined && score !== null && (
-        <span className="opacity-60 font-mono">({score > 0 ? '+' : ''}{score.toFixed(2)})</span>
+        <span className="opacity-50 font-mono">({score > 0 ? '+' : ''}{score.toFixed(2)})</span>
       )}
     </span>
   )
@@ -49,9 +47,9 @@ export function ToneBadge({ tone }) {
   if (!tone) return null
 
   const classes = {
-    Positive: 'bg-emerald-900/40 border border-emerald-700/50 text-emerald-400',
-    Neutral:  'bg-slate-700/40 border border-slate-600/50 text-slate-400',
-    Negative: 'bg-orange-900/40 border border-orange-700/50 text-orange-400',
+    Positive: 'bg-green-50 border border-green-200 text-green-700',
+    Neutral:  'bg-stone-100 border border-stone-200 text-stone-600',
+    Negative: 'bg-orange-50 border border-orange-200 text-orange-700',
   }
 
   const icons = { Positive: '↑', Neutral: '→', Negative: '↓' }
@@ -69,9 +67,9 @@ export function ToneBadge({ tone }) {
 export function FactualityBadge({ rating }) {
   if (!rating) return null
   const styles = {
-    High:  "bg-emerald-900/40 border-emerald-700/50 text-emerald-400",
-    Mixed: "bg-yellow-900/40 border-yellow-700/50 text-yellow-400",
-    Low:   "bg-red-900/40 border-red-700/50 text-red-400",
+    High:  "bg-green-50 border-green-200 text-green-700",
+    Mixed: "bg-amber-50 border-amber-200 text-amber-700",
+    Low:   "bg-red-50 border-red-200 text-red-700",
   }
   const icons = { High: "✓", Mixed: "~", Low: "!" }
   const cls = styles[rating] || styles.Mixed
@@ -81,3 +79,4 @@ export function FactualityBadge({ rating }) {
     </span>
   )
 }
+

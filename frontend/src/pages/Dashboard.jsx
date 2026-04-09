@@ -78,14 +78,14 @@ export default function Dashboard() {
   }, [diversity])
 
   if (loading) return (
-    <div className="min-h-screen bg-slate-900 text-white">
-      <div className="bg-slate-800/50 border-b border-slate-700/30 h-11" />
-      <div className="border-b border-slate-700/30 h-10" />
+    <div className="min-h-screen bg-brand-bg">
+      <div className="bg-white border-b border-brand-border h-11" />
+      <div className="border-b border-brand-border h-10" />
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="lg:grid lg:grid-cols-[240px_1fr] gap-6">
           <div className="hidden lg:block">
-            <div className="bg-slate-800 border border-slate-700/50 rounded-xl p-4 animate-pulse space-y-3">
-              {[1,2,3,4,5].map(i => <div key={i} className="h-3 bg-slate-700 rounded" />)}
+            <div className="bg-white border border-brand-border rounded-xl p-4 animate-pulse space-y-3">
+              {[1,2,3,4,5].map(i => <div key={i} className="h-3 bg-stone-200 rounded" />)}
             </div>
           </div>
           <div>
@@ -100,8 +100,8 @@ export default function Dashboard() {
   )
 
   if (error) return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-      <div className="text-center text-slate-400 max-w-md px-4">
+    <div className="min-h-screen bg-brand-bg flex items-center justify-center">
+      <div className="text-center text-brand-muted max-w-md px-4">
         <p className="text-2xl mb-3">⚠️</p>
         <p className="text-sm">{error}</p>
       </div>
@@ -113,30 +113,30 @@ export default function Dashboard() {
   const maxTrend = trends[0]?.count || 1
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-brand-bg text-stone-900">
 
       {/* ── Top stats + scrape bar ── */}
-      <div className="bg-slate-800/50 border-b border-slate-700/30 py-3 px-4">
+      <div className="bg-white border-b border-brand-border py-3 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-6 text-sm">
             {stats && (
               <>
-                <span className="text-slate-400">
-                  <span className="font-bold text-white">{stats.total_stories}</span>
-                  <span className="text-slate-500 ml-1">stories</span>
+                <span className="text-brand-muted">
+                  <span className="font-bold text-stone-900">{stats.total_stories}</span>
+                  <span className="text-brand-muted ml-1">stories</span>
                 </span>
-                <span className="text-slate-400">
-                  <span className="font-bold text-white">{stats.total_articles}</span>
-                  <span className="text-slate-500 ml-1">articles</span>
+                <span className="text-brand-muted">
+                  <span className="font-bold text-stone-900">{stats.total_articles}</span>
+                  <span className="text-brand-muted ml-1">articles</span>
                 </span>
-                <span className="text-slate-400">
-                  <span className="font-bold text-white">{stats.total_outlets}</span>
-                  <span className="text-slate-500 ml-1">outlets</span>
+                <span className="text-brand-muted">
+                  <span className="font-bold text-stone-900">{stats.total_outlets}</span>
+                  <span className="text-brand-muted ml-1">outlets</span>
                 </span>
                 <span className="hidden sm:flex items-center gap-3 ml-2">
-                  <span className="text-blue-400 font-semibold">{bias.Left ?? 0}L</span>
-                  <span className="text-slate-400 font-semibold">{bias.Center ?? 0}C</span>
-                  <span className="text-red-400 font-semibold">{bias.Right ?? 0}R</span>
+                  <span className="text-blue-600 font-semibold">{bias.Left ?? 0}L</span>
+                  <span className="text-amber-700 font-semibold">{bias.Center ?? 0}C</span>
+                  <span className="text-red-600 font-semibold">{bias.Right ?? 0}R</span>
                 </span>
               </>
             )}
@@ -144,9 +144,9 @@ export default function Dashboard() {
           <button
             onClick={handleScrape}
             disabled={scraping}
-            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700
-                       disabled:text-slate-500 text-white rounded-lg text-sm font-medium
-                       transition-colors cursor-pointer shrink-0"
+            className="px-4 py-1.5 bg-gold-DEFAULT hover:bg-gold-dark disabled:bg-stone-200
+                       disabled:text-stone-400 text-white rounded-lg text-sm font-medium
+                       transition-colors cursor-pointer shrink-0 shadow-sm"
           >
             {scraping ? '⟳ Scraping…' : '↻ Refresh'}
           </button>
@@ -154,24 +154,24 @@ export default function Dashboard() {
       </div>
 
       {/* ── Search + Topic chips ── */}
-      <div className="border-b border-slate-700/30 px-4">
+      <div className="border-b border-brand-border px-4 bg-white">
         <div className="max-w-7xl mx-auto py-2 space-y-2">
           {/* Search bar */}
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">🔍</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted text-sm">🔍</span>
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search stories…"
-              className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg pl-9 pr-4 py-1.5
-                         text-sm text-slate-200 placeholder-slate-500 focus:outline-none
-                         focus:border-slate-500 focus:bg-slate-800 transition-colors"
+              className="w-full bg-stone-50 border border-brand-border rounded-lg pl-9 pr-4 py-1.5
+                         text-sm text-stone-800 placeholder-stone-400 focus:outline-none
+                         focus:border-gold-mid focus:bg-white transition-colors"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-muted hover:text-stone-700 text-xs cursor-pointer"
               >
                 ✕
               </button>
@@ -185,8 +185,8 @@ export default function Dashboard() {
                 onClick={() => { setSearch(''); setTopic(t); loadData(t) }}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0
                   ${activeTopic === t
-                    ? 'bg-white text-slate-900'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`}
+                    ? 'bg-gold-DEFAULT text-white shadow-sm'
+                    : 'text-brand-muted hover:text-stone-900 hover:bg-stone-100'}`}
               >
                 {t}
               </button>
@@ -197,16 +197,16 @@ export default function Dashboard() {
 
       {/* ── Main content ── */}
       {displayStories.length === 0 && !search ? (
-        <div className="flex flex-col items-center justify-center py-32 text-slate-500 px-4">
+        <div className="flex flex-col items-center justify-center py-32 text-brand-muted px-4">
           <p className="text-4xl mb-4">📰</p>
-          <p className="text-lg font-medium mb-2 text-slate-400">No multi-outlet stories yet</p>
-          <p className="text-sm">Click "Refresh" to scrape Pakistani news outlets.</p>
+          <p className="text-lg font-medium mb-2 text-stone-700">No multi-outlet stories yet</p>
+          <p className="text-sm">Click “Refresh” to scrape Pakistani news outlets.</p>
         </div>
       ) : displayStories.length === 0 && search ? (
-        <div className="flex flex-col items-center justify-center py-32 text-slate-500 px-4">
+        <div className="flex flex-col items-center justify-center py-32 text-brand-muted px-4">
           <p className="text-4xl mb-4">🔍</p>
-          <p className="text-lg font-medium mb-2 text-slate-400">No stories match "{search}"</p>
-          <button onClick={() => setSearch('')} className="text-sm text-blue-400 hover:underline cursor-pointer">Clear search</button>
+          <p className="text-lg font-medium mb-2 text-stone-700">No stories match "{search}"</p>
+          <button onClick={() => setSearch('')} className="text-sm text-gold-DEFAULT hover:underline cursor-pointer">Clear search</button>
         </div>
       ) : (
         <div className="max-w-7xl mx-auto px-4 py-6">
@@ -214,95 +214,95 @@ export default function Dashboard() {
 
             {/* ── Daily Briefing sidebar ── */}
             <div className="hidden lg:block">
-              <div className="bg-slate-800 border border-slate-700/50 rounded-xl p-4 sticky top-4 space-y-4">
-                <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">
+              <div className="bg-white border border-brand-border rounded-xl p-4 sticky top-4 space-y-4 shadow-sm">
+                <h2 className="text-xs font-bold uppercase tracking-widest text-brand-muted">
                   Daily Briefing
                 </h2>
 
                 {/* Summary stats */}
-                <div className="space-y-2.5 pb-4 border-b border-slate-700/50">
+                <div className="space-y-2.5 pb-4 border-b border-brand-border">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-500">Stories</span>
-                    <span className="text-sm font-bold text-white">{stats?.total_stories}</span>
+                    <span className="text-xs text-brand-muted">Stories</span>
+                    <span className="text-sm font-bold text-stone-900">{stats?.total_stories}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-500">Articles</span>
-                    <span className="text-sm font-bold text-white">{stats?.total_articles}</span>
+                    <span className="text-xs text-brand-muted">Articles</span>
+                    <span className="text-sm font-bold text-stone-900">{stats?.total_articles}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-500">Outlets</span>
-                    <span className="text-sm font-bold text-white">{stats?.total_outlets}</span>
+                    <span className="text-xs text-brand-muted">Outlets</span>
+                    <span className="text-sm font-bold text-stone-900">{stats?.total_outlets}</span>
                   </div>
                 </div>
 
                 {/* Overall Bias bar */}
                 {stats && (
-                  <div className="pb-4 border-b border-slate-700/50">
-                    <p className="text-xs text-slate-500 mb-2">Overall Bias</p>
+                  <div className="pb-4 border-b border-brand-border">
+                    <p className="text-xs text-brand-muted mb-2">Overall Bias</p>
                     <div className="flex rounded overflow-hidden h-5 text-[10px] font-semibold">
                       {(bias.Left   ?? 0) > 0 && (
-                        <div className="bg-blue-800 text-blue-200 flex items-center justify-center"
+                        <div className="bg-blue-500 text-white flex items-center justify-center"
                           style={{ width: `${((bias.Left ?? 0) / (stats.total_articles || 1)) * 100}%` }}>
                           L
                         </div>
                       )}
                       {(bias.Center ?? 0) > 0 && (
-                        <div className="bg-slate-600 text-slate-200 flex items-center justify-center flex-1">
+                        <div className="bg-amber-400 text-white flex items-center justify-center flex-1">
                           C
                         </div>
                       )}
                       {(bias.Right  ?? 0) > 0 && (
-                        <div className="bg-red-900 text-red-200 flex items-center justify-center"
+                        <div className="bg-red-500 text-white flex items-center justify-center"
                           style={{ width: `${((bias.Right ?? 0) / (stats.total_articles || 1)) * 100}%` }}>
                           R
                         </div>
                       )}
                     </div>
-                    <div className="flex justify-between text-[10px] text-slate-600 mt-1">
-                      <span className="text-blue-500">{bias.Left ?? 0} left</span>
+                    <div className="flex justify-between text-[10px] text-brand-muted mt-1">
+                      <span className="text-blue-600">{bias.Left ?? 0} left</span>
                       <span>{bias.Center ?? 0} center</span>
-                      <span className="text-red-500">{bias.Right ?? 0} right</span>
+                      <span className="text-red-600">{bias.Right ?? 0} right</span>
                     </div>
                   </div>
                 )}
 
                 {/* Reading Diversity Score */}
                 {divScore && (
-                  <div className="pb-4 border-b border-slate-700/50">
-                    <p className="text-xs text-slate-500 mb-2">Your Reading Diversity</p>
+                  <div className="pb-4 border-b border-brand-border">
+                    <p className="text-xs text-brand-muted mb-2">Your Reading Diversity</p>
                     <div className="flex rounded overflow-hidden h-3">
-                      {divScore.lPct > 0 && <div style={{width:`${divScore.lPct}%`}} className="bg-blue-700" />}
-                      {divScore.cPct > 0 && <div style={{width:`${divScore.cPct}%`}} className="bg-slate-600" />}
-                      {divScore.rPct > 0 && <div style={{width:`${divScore.rPct}%`}} className="bg-red-800" />}
+                      {divScore.lPct > 0 && <div style={{width:`${divScore.lPct}%`}} className="bg-blue-500" />}
+                      {divScore.cPct > 0 && <div style={{width:`${divScore.cPct}%`}} className="bg-amber-400" />}
+                      {divScore.rPct > 0 && <div style={{width:`${divScore.rPct}%`}} className="bg-red-500" />}
                     </div>
                     <div className="flex justify-between text-[10px] mt-1">
-                      <span className="text-blue-500">{divScore.lPct}% L</span>
-                      <span className="text-slate-500">{divScore.cPct}% C</span>
-                      <span className="text-red-500">{divScore.rPct}% R</span>
+                      <span className="text-blue-600">{divScore.lPct}% L</span>
+                      <span className="text-brand-muted">{divScore.cPct}% C</span>
+                      <span className="text-red-600">{divScore.rPct}% R</span>
                     </div>
-                    <p className="text-[10px] text-slate-600 mt-0.5">{divScore.n} stories read</p>
+                    <p className="text-[10px] text-brand-muted mt-0.5">{divScore.n} stories read</p>
                   </div>
                 )}
 
                 {/* Topic Trends */}
                 {trends.length > 0 && (
-                  <div className="pb-4 border-b border-slate-700/50">
-                    <p className="text-xs text-slate-500 mb-2">Topics (7 days)</p>
+                  <div className="pb-4 border-b border-brand-border">
+                    <p className="text-xs text-brand-muted mb-2">Topics (7 days)</p>
                     <div className="space-y-1.5">
                       {trends.slice(0, 6).map(t => (
                         <div key={t.topic} className="flex items-center gap-2">
                           <span
-                            className="text-[10px] text-slate-400 shrink-0 cursor-pointer hover:text-white transition-colors"
+                            className="text-[10px] text-brand-muted shrink-0 cursor-pointer hover:text-gold-dark transition-colors"
                             style={{width: '62px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}
                             onClick={() => { setTopic(t.topic); loadData(t.topic) }}
                           >{t.topic}</span>
-                          <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                          <div className="flex-1 h-1.5 bg-stone-200 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-emerald-500 rounded-full transition-all"
+                              className="h-full bg-gold-DEFAULT rounded-full transition-all"
                               style={{width:`${Math.round(t.count/maxTrend*100)}%`}}
                             />
                           </div>
-                          <span className="text-[10px] text-slate-600 w-4 text-right shrink-0">{t.count}</span>
+                          <span className="text-[10px] text-brand-muted w-4 text-right shrink-0">{t.count}</span>
                         </div>
                       ))}
                     </div>
@@ -311,14 +311,14 @@ export default function Dashboard() {
 
                 {/* Story index list */}
                 <div>
-                  <p className="text-xs text-slate-500 mb-2">Top Stories</p>
+                  <p className="text-xs text-brand-muted mb-2">Top Stories</p>
                   <ol className="space-y-3">
                     {stories.slice(0, 8).map((s, i) => (
                       <li key={s.story_id} className="flex gap-2">
-                        <span className="text-xs text-slate-600 font-mono mt-0.5 shrink-0 w-4">{i + 1}.</span>
+                        <span className="text-xs text-gold-mid font-mono mt-0.5 shrink-0 w-4">{i + 1}.</span>
                         <Link
                           to={`/stories/${s.story_id}`}
-                          className="text-xs text-slate-300 hover:text-white leading-snug line-clamp-2 transition-colors"
+                          className="text-xs text-stone-600 hover:text-gold-dark leading-snug line-clamp-2 transition-colors"
                         >
                           {s.story_title}
                         </Link>
@@ -332,16 +332,16 @@ export default function Dashboard() {
             {/* ── Story feed ── */}
             <div>
               {search && (
-                <p className="text-xs text-slate-500 mb-3">
+                <p className="text-xs text-brand-muted mb-3">
                   {displayStories.length} result{displayStories.length !== 1 ? 's' : ''} for
-                  <span className="text-slate-300 font-medium ml-1">"{search}"</span>
+                  <span className="text-stone-800 font-medium ml-1">"{search}"</span>
                 </p>
               )}
 
               {/* Featured story */}
               {featuredStory && (
                 <div className="mb-5">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-2">
                     Top Story
                   </p>
                   <StoryFeedCard story={featuredStory} featured />
@@ -351,7 +351,7 @@ export default function Dashboard() {
               {/* Story grid */}
               {restStories.length > 0 && (
                 <>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-3">
                     More Stories
                   </p>
                   <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">

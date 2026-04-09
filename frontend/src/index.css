@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #0F172A;
+  color: #F1F5F9;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1E293B; }
+::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+
+/* Bias label pills */
+.badge-left    { @apply bg-blue-600/20 text-blue-400 border border-blue-600/30; }
+.badge-center  { @apply bg-emerald-600/20 text-emerald-400 border border-emerald-600/30; }
+.badge-right   { @apply bg-red-600/20 text-red-400 border border-red-600/30; }
+
+/* Framing tone pills */
+.badge-positive  { @apply bg-green-600/20 text-green-400; }
+.badge-neutral   { @apply bg-slate-600/20 text-slate-400; }
+.badge-negative  { @apply bg-orange-600/20 text-orange-400; }

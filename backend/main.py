@@ -175,34 +175,39 @@ def _group_recent_stories(db):
 
     db.commit()
 
-    # Auto-summarize new stories that don't have a summary yet (Groq: 14,400 req/day)
-    auto_done = 0
-    for sid in set(group_to_story_id.values()):
-        story_obj = db.query(Story).filter(Story.story_id == sid).first()
-        if not story_obj or story_obj.has_summary:
-            continue
-        story_articles_data = [
-            {
-                "outlet":      a.outlet.name if a.outlet else "Unknown",
-                "title":       a.title,
-                "bias_label":  a.bias_label or "Center",
-                "bias_score":  0.0,
-                "url":         a.url,
-                "content":     a.content or "",
-            }
-            for a in db.query(Article).filter(Article.story_id == sid).all()
-        ]
-        result = generate_story_summary(story_articles_data)
-        if result and result.get("what_happened"):
-            story_obj.story_title    = result["story_title"]    or story_obj.story_title
-            story_obj.summary_json   = json.dumps(result)
-            story_obj.has_summary    = True
-            auto_done += 1
-            if auto_done >= 10:   # summarize up to 10 new stories per pipeline run
-                break
-    if auto_done:
-        db.commit()
-        logger.info(f"Auto-summarized {auto_done} new stories via Groq.")
+    # Auto-summarize: only runs if AUTO_SUMMARIZE=true in environment
+    # Set AUTO_SUMMARIZE=true in Railway Variables when presenting/demoing
+    # Leave unset (or false) to conserve Groq tokens
+    if os.getenv("AUTO_SUMMARIZE", "false").lower() == "true":
+        auto_done = 0
+        for sid in set(group_to_story_id.values()):
+            story_obj = db.query(Story).filter(Story.story_id == sid).first()
+            if not story_obj or story_obj.has_summary:
+                continue
+            story_articles_data = [
+                {
+                    "outlet":      a.outlet.name if a.outlet else "Unknown",
+                    "title":       a.title,
+                    "bias_label":  a.bias_label or "Center",
+                    "bias_score":  0.0,
+                    "url":         a.url,
+                    "content":     a.content or "",
+                }
+                for a in db.query(Article).filter(Article.story_id == sid).all()
+            ]
+            result = generate_story_summary(story_articles_data)
+            if result and result.get("what_happened"):
+                story_obj.story_title    = result["story_title"]    or story_obj.story_title
+                story_obj.summary_json   = json.dumps(result)
+                story_obj.has_summary    = True
+                auto_done += 1
+                if auto_done >= 10:
+                    break
+        if auto_done:
+            db.commit()
+            logger.info(f"Auto-summarized {auto_done} new stories via Groq.")
+    else:
+        logger.info("Auto-summarize disabled (set AUTO_SUMMARIZE=true to enable).")
 
     logger.info(f"Grouped {len(recent)} articles into {len(group_to_story_id)} stories.")
 

@@ -106,10 +106,7 @@ export default function StoryDetail() {
       const res = await getStoryDetail(id)
       setStory(res.data)
       trackDiversity(res.data)
-      // Only auto-generate if there's no summary at all (not even a fallback stored)
-      if (!res.data.has_summary) {
-        generateSummary(false)
-      }
+      // Auto-summarize disabled to save tokens. User must click button.
     } catch {
       setStory(null)
     } finally {

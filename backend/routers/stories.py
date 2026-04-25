@@ -317,12 +317,6 @@ def expand_story(story_id: int, db: Session = Depends(get_db)):
         story.blindspot_side = compute_blindspot(labels)
         db.commit()
 
-        # 4. Automatic Re-summarize
-        try:
-            _run_story_summary(story_id, db)
-        except Exception as e:
-            logger.error(f"Auto-summary after expansion failed: {e}")
-    
     return _build_story_dict(story_id, db, include_articles=True)
 
 
@@ -358,16 +352,25 @@ def _run_story_summary(story_id: int, db: Session):
             seen_outlets.add(outlet_name)
             deduped.append(a)
 
+    # 1. Cap articles to top 6 balanced by bias (2 L, 2 C, 2 R)
+    lefts   = [a for a in articles if a.analysis and a.analysis.bias_score is not None and a.analysis.bias_score < -0.15]
+    rights  = [a for a in articles if a.analysis and a.analysis.bias_score is not None and a.analysis.bias_score > 0.15]
+    centers = [a for a in articles if a not in lefts and a not in rights]
+
+    # Pick best representatives
+    def get_top(arr, n): return sorted(arr, key=lambda x: x.scraped_at, reverse=True)[:n]
+    balanced = get_top(lefts, 2) + get_top(centers, 2) + get_top(rights, 2)
+
     article_dicts = [
         {
             "outlet":     a.outlet.name if a.outlet else "Unknown",
             "title":      a.title,
-            "content":    (a.content or "")[:300],
+            "content":    (a.content or "")[:150], # Reduced to 150 for tokens
             "bias_label": a.bias_label or "Center",
             "bias_score": (a.analysis.bias_score if a.analysis and a.analysis.bias_score is not None else 0.0),
             "url":        a.url,
         }
-        for a in deduped
+        for a in balanced
     ]
 
     result = generate_story_summary(article_dicts)

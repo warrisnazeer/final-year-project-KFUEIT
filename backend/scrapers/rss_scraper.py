@@ -53,22 +53,22 @@ OUTLETS = [
     },
     {
         "name": "Pakistan Today",
-        "rss_url": "https://www.pakistantoday.com.pk/feed/",
+        "rss_url": "https://news.google.com/rss/search?q=site:pakistantoday.com.pk&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://www.pakistantoday.com.pk",
     },
     {
         "name": "The Nation",
-        "rss_url": "https://nation.com.pk/feed/",
+        "rss_url": "https://news.google.com/rss/search?q=site:nation.com.pk&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://nation.com.pk",
     },
     {
         "name": "Business Recorder",
-        "rss_url": "https://www.brecorder.com/feed",
+        "rss_url": "https://news.google.com/rss/search?q=site:brecorder.com&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://www.brecorder.com",
     },
     {
         "name": "Naya Daur",
-        "rss_url": "https://nayadaur.tv/feed/",
+        "rss_url": "https://news.google.com/rss/search?q=site:nayadaur.tv&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://nayadaur.tv",
     },
     {
@@ -84,12 +84,12 @@ OUTLETS = [
     },
     {
         "name": "Daily Times",
-        "rss_url": "https://dailytimes.com.pk/feed/",
+        "rss_url": "https://news.google.com/rss/search?q=site:dailytimes.com.pk&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://dailytimes.com.pk",
     },
     {
         "name": "The Friday Times",
-        "rss_url": "https://thefridaytimes.com/feed/",
+        "rss_url": "https://news.google.com/rss/search?q=site:thefridaytimes.com&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://thefridaytimes.com",
     },
     {
@@ -217,7 +217,7 @@ def fetch_outlet(outlet: dict, fetch_full: bool = False) -> list:
         if feed.bozo and not feed.entries:
             logger.warning(f"Feed parse warning for {outlet['name']}: {feed.bozo_exception}")
 
-        for entry in feed.entries[:15]:
+        for entry in feed.entries[:35]:
             title = (entry.get("title") or "").strip()
             url = (entry.get("link") or "").strip()
 

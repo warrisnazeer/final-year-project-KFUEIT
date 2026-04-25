@@ -64,7 +64,7 @@ def group_articles(articles: list) -> dict:
 
             # Average linkage: new article must be similar on average to members
             avg_sim = sum(sim_matrix[i][j] for j in group) / len(group)
-            if avg_sim >= 0.20 and avg_sim > best_avg_sim:
+            if avg_sim >= 0.08 and avg_sim > best_avg_sim:
                 best_avg_sim = avg_sim
                 best_group = g_idx
 

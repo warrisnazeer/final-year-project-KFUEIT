@@ -125,9 +125,9 @@ export default function StoryDetail() {
       const detail = err?.response?.data?.detail || ''
       if (manual) {
         if (err?.response?.status === 503 || detail.toLowerCase().includes('quota')) {
-          setSummaryErr('Groq rate limit reached. Try again in a minute.')
+          setSummaryErr('Analysis Model rate limit reached. Try again in a minute.')
         } else {
-          setSummaryErr('Could not generate summary. Check Groq API key.')
+          setSummaryErr('Could not generate summary. Check Analysis Model API key.')
         }
       }
     } finally {

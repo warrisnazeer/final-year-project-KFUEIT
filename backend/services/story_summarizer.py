@@ -115,7 +115,7 @@ If outlets all seem to frame it similarly (rare), note that honestly in the fram
             "why_it_matters":  str(result.get("why_it_matters", "")).strip(),
             "left_framing":    str(result.get("left_framing", "")).strip(),
             "right_framing":   str(result.get("right_framing", "")).strip(),
-            "generated_by":    "groq",
+            "generated_by":    "model",
         }
 
     except Exception as e:

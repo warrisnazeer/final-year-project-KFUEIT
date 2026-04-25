@@ -21,5 +21,6 @@ export const getBlindspotFeed    = (side = null, limit = 20) =>
 export const getStoryDetail      = (id) => api.get(`/stories/${id}`)
 export const getTopicTrends      = (days = 7) => api.get(`/dashboard/topic-trends?days=${days}`)
 export const summarizeStory      = (id) => api.post(`/stories/${id}/summarize`)
+export const expandStory         = (id) => api.post(`/stories/${id}/expand`)
 
 export default api

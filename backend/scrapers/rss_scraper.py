@@ -242,3 +242,53 @@ def scrape_all_outlets(fetch_full: bool = False) -> list:
 
     logger.info(f"Total fetched: {len(all_articles)} articles from {len(OUTLETS)} outlets")
     return all_articles
+def search_outlets(query: str, limit: int = 15) -> list:
+    """
+    Proactively search for a specific query across all supported outlets.
+    Uses Google News RSS search as a proxy.
+    """
+    logger.info(f"Deep Search: query='{query}'")
+    
+    # URL encode query
+    from urllib.parse import quote
+    safe_query = quote(query)
+    
+    # 1. Search Google News for this specific query
+    # We don't restrict the site: in the query to avoid URL length limits,
+    # instead we filter the results by our supported domains.
+    search_url = f"https://news.google.com/rss/search?q={safe_query}&hl=en-PK&gl=PK&ceid=PK:en"
+    
+    feed = feedparser.parse(search_url)
+    if not feed.entries:
+        return []
+
+    # Get active domains for filtering
+    supported_domains = []
+    for o in OUTLETS:
+        domain = o["website_url"].replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0]
+        supported_domains.append(domain)
+
+    results = []
+    for entry in feed.entries[:limit]:
+        url = entry.link
+        
+        # Check if URL belongs to one of our supported outlets
+        matched_outlet = None
+        for o in OUTLETS:
+            domain = o["website_url"].replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0]
+            if domain in url:
+                matched_outlet = o["name"]
+                break
+        
+        if not matched_outlet:
+            continue
+
+        results.append({
+            "title": entry.title.split(" - ")[0],
+            "url": url,
+            "outlet_name": matched_outlet,
+            "publish_date": datetime(*entry.published_parsed[:6]) if hasattr(entry, "published_parsed") else datetime.utcnow(),
+            "content": "", # Will be scraped on demand
+        })
+
+    return results

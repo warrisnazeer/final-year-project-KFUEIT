@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { getStoryDetail, summarizeStory } from '../api/client'
+import { getStoryDetail, summarizeStory, expandStory } from '../api/client'
 import { BiasBadge, ToneBadge, FactualityBadge, BIAS_5 } from '../components/Badges'
 import CoverageBar from '../components/CoverageBar'
 
@@ -88,6 +88,7 @@ export default function StoryDetail() {
   const [story, setStory]             = useState(null)
   const [loading, setLoading]         = useState(true)
   const [summarizing, setSummarizing] = useState(false)
+  const [searching, setSearching]     = useState(false)
   const [summaryErr, setSummaryErr]   = useState(null)
   const [activeTab, setActiveTab]     = useState('All')
 
@@ -134,6 +135,20 @@ export default function StoryDetail() {
       }
     } finally {
       setSummarizing(false)
+    }
+  }
+
+  const handleExpand = async () => {
+    setSearching(true)
+    try {
+      const res = await expandStory(id)
+      setStory(res.data)
+      // Auto-trigger diversity tracking if new articles added
+      trackDiversity(res.data)
+    } catch (err) {
+      console.error('Expansion failed:', err)
+    } finally {
+      setSearching(false)
     }
   }
 
@@ -466,8 +481,8 @@ export default function StoryDetail() {
             {/* Methodology note */}
             <div className="bg-stone-50 border border-brand-border rounded-xl p-4 text-xs text-brand-muted leading-relaxed">
               <strong className="text-stone-700">How bias is measured:</strong> Scores combine
-              Groq Llama 3.3 LLM analysis (40%), HuggingFace BART zero-shot classification (25%),
-              Pakistani-context keywords (20%), and outlet editorial priors (15%). In Pakistan&apos;s media landscape,{' '}
+              HuggingFace BART zero-shot classification (60%), Pakistani-context keywords (30%), and
+              outlet editorial priors (10%). In Pakistan&apos;s media landscape,{' '}
               <span className="text-blue-600">Left = liberal, pro-civilian, critical of establishment</span>{' '}
               and{' '}
               <span className="text-red-600">Right = pro-establishment, security-state aligned</span>{' '}
@@ -529,6 +544,30 @@ export default function StoryDetail() {
                     {farRightPct >= 10 ? `FR ${farRightPct}%` : farRightPct >= 5 ? `${farRightPct}%` : ''}
                   </div>
                 )}
+              </div>
+              <div className="p-3 bg-stone-50 border-t border-brand-border">
+                <button
+                  onClick={handleExpand}
+                  disabled={searching}
+                  className="w-full py-2 px-4 bg-white hover:bg-sky-50 border border-brand-border 
+                           hover:border-sky-200 text-sky-700 text-xs font-bold uppercase tracking-wider 
+                           rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-sm"
+                >
+                  {searching ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-sky-600 border-t-transparent rounded-full animate-spin" />
+                      Deep Searching...
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-lg leading-none mt-[-2px]">&#9906;</span>
+                      Check for more articles
+                    </>
+                  )}
+                </button>
+                <p className="text-[9px] text-brand-muted text-center mt-2 leading-tight px-2">
+                  Proactively scans all 15 outlets for new coverage related to this specific story.
+                </p>
               </div>
             </div>
 

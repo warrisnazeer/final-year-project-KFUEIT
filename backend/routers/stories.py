@@ -16,6 +16,12 @@ from typing import Optional
 from database import get_db
 from models import Article, NewsOutlet, AnalysisResult, Story, StorySummary
 from services.story_summarizer import generate_story_summary
+from services.bias_classifier import classify_article
+from services.framing_analyzer import analyze_framing
+from services.topic_tagger import tag_story_topic, compute_blindspot
+from scrapers.rss_scraper import search_outlets, _fetch_full_article
+from datetime import datetime
+import json
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -232,16 +238,116 @@ def get_story(story_id: int, db: Session = Depends(get_db)):
     return data
 
 
+@router.post("/{story_id}/expand")
+def expand_story(story_id: int, db: Session = Depends(get_db)):
+    """
+    Proactively search for more articles to add to this story.
+    1. Search Google News for the story title.
+    2. Fetch and analyze any new articles from supported outlets.
+    3. Attach to story if similar enough.
+    4. Automatically regenerate summary.
+    """
+    story = db.query(Story).filter(Story.story_id == story_id).first()
+    if not story:
+        raise HTTPException(status_code=404, detail="Story not found")
+
+    # Get existing articles to build a similarity profile
+    existing_articles = db.query(Article).filter(Article.story_id == story_id).all()
+    if not existing_articles:
+        raise HTTPException(status_code=400, detail="Story has no articles")
+
+    story_title = story.story_title or existing_articles[0].title
+    logger.info(f"Expanding story {story_id}: '{story_title}'")
+
+    # 1. Search Google News for more articles
+    search_results = search_outlets(story_title, limit=10)
+    
+    new_found = 0
+    for res in search_results:
+        # Skip if already exists
+        if db.query(Article).filter(Article.url == res["url"]).first():
+            continue
+
+        outlet = db.query(NewsOutlet).filter(NewsOutlet.name == res["outlet_name"]).first()
+        if not outlet:
+            continue
+
+        # 2. Fetch full content and analyze
+        content = _fetch_full_article(res["url"]) or ""
+        if len(content) < 200:
+            continue # Skip low quality/failed fetches
+            
+        bias = classify_article(res["title"], content, res["outlet_name"])
+        framing = analyze_framing(res["title"], content)
+
+        # 3. Create and attach article
+        article = Article(
+            title=res["title"],
+            content=content,
+            url=res["url"],
+            publish_date=res["publish_date"],
+            bias_label=bias["bias_label"],
+            framing_tone=framing["framing_type"],
+            outlet_id=outlet.outlet_id,
+            story_id=story_id, # Attach directly
+        )
+        db.add(article)
+        db.flush()
+
+        result = AnalysisResult(
+            bias_score=bias["bias_score"],
+            sentiment_score=framing["sentiment_score"],
+            framing_type=framing["framing_type"],
+            confidence_score=bias["confidence_score"],
+            zero_shot_scores=bias["zero_shot_scores"],
+            article_id=article.article_id,
+        )
+        db.add(result)
+        new_found += 1
+
+    if new_found > 0:
+        db.commit()
+        logger.info(f"Found {new_found} new articles for story {story_id}")
+        
+        # Update story metadata (topic, blindspot)
+        all_articles = db.query(Article).filter(Article.story_id == story_id).all()
+        titles = [a.title for a in all_articles]
+        labels = [a.bias_label or "Center" for a in all_articles]
+        story.topic_tag = tag_story_topic(titles)
+        story.blindspot_side = compute_blindspot(labels)
+        db.commit()
+
+        # 4. Automatic Re-summarize
+        try:
+            _run_story_summary(story_id, db)
+        except Exception as e:
+            logger.error(f"Auto-summary after expansion failed: {e}")
+    
+    return _build_story_dict(story_id, db, include_articles=True)
+
+
 @router.post("/{story_id}/summarize")
 def summarize_story(story_id: int, db: Session = Depends(get_db)):
     """Generate (or regenerate) a Gemini summary for this story."""
+    try:
+        _run_story_summary(story_id, db)
+        return _build_story_dict(story_id, db, include_articles=True)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Manual summary generation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def _run_story_summary(story_id: int, db: Session):
+    """Internal helper to run the summary pipeline."""
     articles = (
         db.query(Article)
         .filter(Article.story_id == story_id)
         .all()
     )
     if not articles:
-        raise HTTPException(status_code=404, detail="Story not found")
+        raise HTTPException(status_code=404, detail="No articles found for story")
 
     # One article per outlet (best representative), sorted left → right
     seen_outlets: set = set()
@@ -266,11 +372,11 @@ def summarize_story(story_id: int, db: Session = Depends(get_db)):
 
     result = generate_story_summary(article_dicts)
 
-    # None means Gemini quota was exceeded — don't store a fallback, raise 503
+    # None means Groq quota was exceeded
     if result is None:
         raise HTTPException(
             status_code=503,
-            detail="Gemini API quota exceeded. The free tier allows 20 requests/day. Please try again tomorrow or regenerate manually.",
+            detail="AI quota exceeded. Please try again in a minute.",
         )
 
     existing = db.query(StorySummary).filter(StorySummary.story_id == story_id).first()
@@ -296,5 +402,4 @@ def summarize_story(story_id: int, db: Session = Depends(get_db)):
             generated_by    = result["generated_by"],
         ))
     db.commit()
-
     return result

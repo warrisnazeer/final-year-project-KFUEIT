@@ -11,9 +11,10 @@ import HowItWorks from './pages/HowItWorks'
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-brand-bg">
+      <div className="min-h-screen bg-brand-bg text-slate-900">
         <Navbar />
-        <main>
+        <main className="relative">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-cyan-100/40 via-sky-100/30 to-transparent" />
           <Routes>
             <Route path="/"              element={<Dashboard />} />
             <Route path="/outlets"       element={<Outlets />} />

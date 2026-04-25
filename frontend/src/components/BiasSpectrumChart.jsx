@@ -6,31 +6,31 @@
  */
 export default function BiasSpectrumChart({ data }) {
   if (!data || data.length === 0) {
-    return <p className="text-brand-muted text-sm">No data yet.</p>
+    return <p className="text-slate-500 text-sm">No data yet.</p>
   }
 
   // Map score (-1 to +1) to percentage (0% to 100%)
   const toPercent = (score) => ((score + 1) / 2) * 100
 
   const dotColor = (score) => {
-    if (score < -0.15) return '#2563EB'   // blue — Left
-    if (score > 0.15)  return '#DC2626'   // red — Right
-    return '#C8973A'                      // gold — Center
+    if (score < -0.15) return '#3B82F6'   // blue — Left
+    if (score > 0.15)  return '#EF4444'   // red — Right
+    return '#14B8A6'                       // teal — Center
   }
 
   return (
     <div className="w-full select-none">
       {/* Scale labels */}
-      <div className="flex justify-between text-xs text-brand-muted mb-2 px-1">
-        <span className="text-blue-400 font-medium">◀ Left</span>
-        <span className="text-amber-600 font-medium">Centre</span>
-        <span className="text-red-400 font-medium">Right ▶</span>
+      <div className="flex justify-between text-xs text-slate-500 mb-2 px-1">
+        <span className="text-blue-600 font-medium">◀ Left</span>
+        <span className="text-teal-600 font-medium">Centre</span>
+        <span className="text-red-600 font-medium">Right ▶</span>
       </div>
 
       {/* Track */}
-      <div className="relative h-3 rounded-full mb-8 border border-brand-border" style={{ background: 'linear-gradient(to right, #dbeafe 0%, #fdf3e0 50%, #fee2e2 100%)' }}>
+      <div className="relative h-3 rounded-full bg-gradient-to-r from-blue-200 via-teal-200 to-red-200 border border-brand-border mb-8">
         {/* Centre line */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-stone-400/50" />
+        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-500/40" />
 
         {/* Outlet dots */}
         {data.map((outlet) => {
@@ -42,11 +42,11 @@ export default function BiasSpectrumChart({ data }) {
               style={{ left: `${pct}%` }}
             >
               <div
-                className="w-3.5 h-3.5 rounded-full border-2 border-white -translate-x-1/2 cursor-pointer transition-transform group-hover:scale-150 shadow-sm"
+                className="w-3.5 h-3.5 rounded-full border-2 border-white -translate-x-1/2 cursor-pointer transition-transform group-hover:scale-150"
                 style={{ backgroundColor: dotColor(outlet.avg_bias_score) }}
               />
               {/* Tooltip label below */}
-              <div className="absolute top-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-stone-600 group-hover:text-stone-900 transition-colors">
+              <div className="absolute top-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-slate-600 group-hover:text-slate-900 transition-colors">
                 {outlet.outlet.replace(' News', '').replace(' International', '')}
               </div>
             </div>
@@ -57,11 +57,11 @@ export default function BiasSpectrumChart({ data }) {
       {/* Legend table */}
       <div className="mt-6 space-y-1">
         {data.map((outlet) => (
-          <div key={outlet.outlet} className="flex items-center justify-between text-xs py-1 border-b border-brand-border">
-            <span className="text-stone-700 w-40 truncate font-medium">{outlet.outlet}</span>
-            <div className="flex gap-3">
+          <div key={outlet.outlet} className="flex items-center justify-between text-xs py-1 border-b border-brand-border/50">
+            <span className="text-slate-700 w-40 truncate">{outlet.outlet}</span>
+            <div className="flex gap-3 text-slate-500">
               <span className="text-blue-600">{outlet.left_pct}% L</span>
-              <span className="text-amber-700">{outlet.center_pct}% C</span>
+              <span className="text-teal-600">{outlet.center_pct}% C</span>
               <span className="text-red-600">{outlet.right_pct}% R</span>
             </div>
             <span

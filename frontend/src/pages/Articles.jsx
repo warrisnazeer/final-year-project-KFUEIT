@@ -39,7 +39,7 @@ export default function Articles() {
         <select
           value={outlet}
           onChange={e => { setOutlet(e.target.value); setPage(0) }}
-          className="bg-white border border-brand-border text-stone-700 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-gold-mid"
+          className="bg-white border border-brand-border text-stone-700 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-sky-400"
         >
           <option value="">All Outlets</option>
           {OUTLETS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -54,9 +54,9 @@ export default function Articles() {
                 biasFilter === b
                   ? b === 'Left' ? 'bg-blue-50 border-blue-300 text-blue-700'
                     : b === 'Right' ? 'bg-red-50 border-red-300 text-red-700'
-                    : b === 'Center' ? 'bg-amber-50 border-amber-300 text-amber-700'
-                    : 'bg-gold-light border-gold-mid text-gold-dark'
-                  : 'border-brand-border text-brand-muted hover:border-gold-mid hover:text-stone-700'
+                    : b === 'Center' ? 'bg-teal-50 border-teal-300 text-teal-700'
+                    : 'bg-sky-50 border-sky-300 text-sky-700'
+                  : 'border-brand-border text-brand-muted hover:border-sky-300 hover:text-stone-700'
               }`}
             >
               {b || 'All Bias'}
@@ -86,7 +86,7 @@ export default function Articles() {
           <button
             onClick={() => setPage(p => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="px-4 py-2 rounded-lg bg-white border border-brand-border text-sm text-stone-600 disabled:opacity-40 hover:border-gold-mid"
+            className="px-4 py-2 rounded-lg bg-white border border-brand-border text-sm text-stone-600 disabled:opacity-40 hover:border-sky-300"
           >
             ← Prev
           </button>
@@ -96,7 +96,7 @@ export default function Articles() {
           <button
             onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
-            className="px-4 py-2 rounded-lg bg-white border border-brand-border text-sm text-stone-600 disabled:opacity-40 hover:border-gold-mid"
+            className="px-4 py-2 rounded-lg bg-white border border-brand-border text-sm text-stone-600 disabled:opacity-40 hover:border-sky-300"
           >
             Next →
           </button>

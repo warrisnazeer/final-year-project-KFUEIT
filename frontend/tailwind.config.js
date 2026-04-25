@@ -5,25 +5,26 @@ export default {
     extend: {
       colors: {
         brand: {
-          bg: '#F7F4EF',
+          bg: '#F6FAFF',
           card: '#FFFFFF',
-          border: '#E4D9C8',
-          muted: '#8C7B6B',
+          border: '#D8E3F2',
+          muted: '#5B6B83',
         },
-        gold: {
-          DEFAULT: '#C8973A',
-          light: '#FDF3E0',
-          mid:   '#DDB96A',
-          dark:  '#9A6F2A',
+        accent: {
+          cyan: '#06B6D4',
+          sky: '#0EA5E9',
+          lime: '#84CC16',
+          coral: '#F97316',
+          violet: '#7C3AED',
         },
         bias: {
           left: '#2563EB',
-          center: '#C8973A',
+          center: '#14B8A6',
           right: '#DC2626',
         },
         tone: {
           positive: '#16A34A',
-          neutral:  '#8C7B6B',
+          neutral: '#64748B',
           negative: '#EA580C',
         },
       },

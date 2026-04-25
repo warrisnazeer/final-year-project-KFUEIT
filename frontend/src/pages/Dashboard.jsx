@@ -116,7 +116,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-brand-bg text-stone-900">
 
       {/* ── Top stats + scrape bar ── */}
-      <div className="bg-white border-b border-brand-border py-3 px-4">
+      <div className="bg-white/90 backdrop-blur-sm border-b border-brand-border py-3 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-6 text-sm">
             {stats && (
@@ -144,7 +144,7 @@ export default function Dashboard() {
           <button
             onClick={handleScrape}
             disabled={scraping}
-            className="px-4 py-1.5 bg-gold-DEFAULT hover:bg-gold-dark disabled:bg-stone-200
+            className="px-4 py-1.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 disabled:bg-stone-200
                        disabled:text-stone-400 text-white rounded-lg text-sm font-medium
                        transition-colors cursor-pointer shrink-0 shadow-sm"
           >
@@ -154,7 +154,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── Search + Topic chips ── */}
-      <div className="border-b border-brand-border px-4 bg-white">
+      <div className="border-b border-brand-border px-4 bg-white/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto py-2 space-y-2">
           {/* Search bar */}
           <div className="relative">
@@ -166,7 +166,7 @@ export default function Dashboard() {
               placeholder="Search stories…"
               className="w-full bg-stone-50 border border-brand-border rounded-lg pl-9 pr-4 py-1.5
                          text-sm text-stone-800 placeholder-stone-400 focus:outline-none
-                         focus:border-gold-mid focus:bg-white transition-colors"
+                         focus:border-sky-400 focus:bg-white transition-colors"
             />
             {search && (
               <button
@@ -185,8 +185,8 @@ export default function Dashboard() {
                 onClick={() => { setSearch(''); setTopic(t); loadData(t) }}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0
                   ${activeTopic === t
-                    ? 'bg-gold-DEFAULT text-white shadow-sm'
-                    : 'text-brand-muted hover:text-stone-900 hover:bg-stone-100'}`}
+                      ? 'bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-sm'
+                      : 'text-brand-muted hover:text-stone-900 hover:bg-sky-50'}`}
               >
                 {t}
               </button>
@@ -206,15 +206,15 @@ export default function Dashboard() {
         <div className="flex flex-col items-center justify-center py-32 text-brand-muted px-4">
           <p className="text-4xl mb-4">🔍</p>
           <p className="text-lg font-medium mb-2 text-stone-700">No stories match "{search}"</p>
-          <button onClick={() => setSearch('')} className="text-sm text-gold-DEFAULT hover:underline cursor-pointer">Clear search</button>
+          <button onClick={() => setSearch('')} className="text-sm text-sky-600 hover:underline cursor-pointer">Clear search</button>
         </div>
       ) : (
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-6 nn-reveal">
           <div className="lg:grid lg:grid-cols-[240px_1fr] gap-6">
 
             {/* ── Daily Briefing sidebar ── */}
             <div className="hidden lg:block">
-              <div className="bg-white border border-brand-border rounded-xl p-4 sticky top-4 space-y-4 shadow-sm">
+              <div className="bg-white border border-brand-border rounded-xl p-4 sticky top-4 space-y-4 shadow-[0_14px_34px_-24px_rgba(2,132,199,0.45)]">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-brand-muted">
                   Daily Briefing
                 </h2>
@@ -292,13 +292,13 @@ export default function Dashboard() {
                       {trends.slice(0, 6).map(t => (
                         <div key={t.topic} className="flex items-center gap-2">
                           <span
-                            className="text-[10px] text-brand-muted shrink-0 cursor-pointer hover:text-gold-dark transition-colors"
+                            className="text-[10px] text-brand-muted shrink-0 cursor-pointer hover:text-sky-700 transition-colors"
                             style={{width: '62px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}
                             onClick={() => { setTopic(t.topic); loadData(t.topic) }}
                           >{t.topic}</span>
                           <div className="flex-1 h-1.5 bg-stone-200 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-gold-DEFAULT rounded-full transition-all"
+                              className="h-full bg-gradient-to-r from-cyan-500 to-sky-500 rounded-full transition-all"
                               style={{width:`${Math.round(t.count/maxTrend*100)}%`}}
                             />
                           </div>
@@ -315,10 +315,10 @@ export default function Dashboard() {
                   <ol className="space-y-3">
                     {stories.slice(0, 8).map((s, i) => (
                       <li key={s.story_id} className="flex gap-2">
-                        <span className="text-xs text-gold-mid font-mono mt-0.5 shrink-0 w-4">{i + 1}.</span>
+                        <span className="text-xs text-sky-600 font-mono mt-0.5 shrink-0 w-4">{i + 1}.</span>
                         <Link
                           to={`/stories/${s.story_id}`}
-                          className="text-xs text-stone-600 hover:text-gold-dark leading-snug line-clamp-2 transition-colors"
+                          className="text-xs text-stone-600 hover:text-sky-700 leading-snug line-clamp-2 transition-colors"
                         >
                           {s.story_title}
                         </Link>

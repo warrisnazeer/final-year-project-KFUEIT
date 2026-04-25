@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 const BIAS_COLORS = {
   'Far Left':   { bg: 'bg-blue-700', text: 'text-white', label: 'Far Left' },
   'Lean Left':  { bg: 'bg-blue-400', text: 'text-white', label: 'Lean Left' },
-  'Center':     { bg: 'bg-amber-400', text: 'text-white', label: 'Center' },
+  'Center':     { bg: 'bg-teal-500', text: 'text-white', label: 'Center' },
   'Lean Right': { bg: 'bg-red-400',  text: 'text-white', label: 'Lean Right' },
   'Far Right':  { bg: 'bg-red-700',  text: 'text-white', label: 'Far Right' },
 }
@@ -34,7 +34,7 @@ export default function HowItWorks() {
       {/* Header */}
       <div className="bg-white border-b border-brand-border py-10 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-gold-light border border-gold-mid text-gold-dark text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
+          <div className="inline-flex items-center gap-2 bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
             Methodology
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-stone-900 mb-3">How NewsNarrative Works</h1>
@@ -97,7 +97,7 @@ export default function HowItWorks() {
             <div className="space-y-4">
               <div className="bg-stone-50 border border-brand-border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-semibold text-gold-dark">Zero-Shot Classification (60%)</span>
+                  <span className="text-sm font-semibold text-sky-700">Zero-Shot Classification (60%)</span>
                   <span className="text-xs text-brand-muted font-mono">HuggingFace BART</span>
                 </div>
                 <p className="text-xs text-brand-muted leading-relaxed">
@@ -184,7 +184,7 @@ export default function HowItWorks() {
                 ['Right Framing',    'How conservative/establishment outlets interpret and emphasise this story'],
               ].map(([field, desc]) => (
                 <div key={field} className="flex gap-3 text-xs">
-                  <span className="text-gold-dark font-semibold w-28 shrink-0">{field}</span>
+                  <span className="text-sky-700 font-semibold w-28 shrink-0">{field}</span>
                   <span className="text-brand-muted">{desc}</span>
                 </div>
               ))}

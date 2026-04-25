@@ -17,27 +17,27 @@ export default function Navbar() {
     const isActive = to === '/' ? pathname === '/' : pathname.startsWith(to)
     if (label === 'Blindspot')
       return isActive
-        ? 'bg-amber-100 text-amber-800 border border-amber-300'
-        : 'text-amber-700 hover:text-amber-900 hover:bg-amber-50'
+        ? 'bg-orange-100 text-orange-700 border border-orange-200 shadow-sm'
+        : 'text-orange-600 hover:text-orange-700 hover:bg-orange-50'
     if (label === 'How It Works')
       return isActive
-        ? 'bg-stone-100 text-stone-800'
-        : 'text-stone-500 hover:text-stone-800 hover:bg-stone-100'
+        ? 'bg-teal-100 text-teal-700 border border-teal-200 shadow-sm'
+        : 'text-teal-600 hover:text-teal-700 hover:bg-teal-50'
     return isActive
-      ? 'bg-gold-light text-gold-dark font-semibold'
-      : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'
+      ? 'bg-sky-100 text-sky-700 border border-sky-200 shadow-sm'
+      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
   }
 
   return (
-    <nav className="bg-white border-b border-brand-border sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white/90 backdrop-blur-md border-b border-brand-border sticky top-0 z-50 shadow-[0_10px_30px_-24px_rgba(2,6,23,0.5)]">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-13">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-bold text-base text-stone-900 shrink-0">
-          <span className="w-6 h-6 rounded bg-gold-DEFAULT flex items-center justify-center text-[11px] font-black text-white shadow-sm">
+        <Link to="/" className="flex items-center gap-1.5 font-bold text-base text-slate-900 shrink-0">
+          <span className="w-6 h-6 rounded bg-gradient-to-br from-teal-500 to-sky-500 flex items-center justify-center text-[11px] font-black text-white shadow-sm">
             N
           </span>
           <span className="tracking-tight">
-            News<span className="text-gold-DEFAULT">Narrative</span>
+            News<span className="text-sky-600">Narrative</span>
           </span>
         </Link>
 
@@ -56,19 +56,19 @@ export default function Navbar() {
 
         {/* Right: live + hamburger */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-stone-400 shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold-DEFAULT animate-pulse" />
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="hidden sm:block">Live</span>
           </div>
           {/* Hamburger — mobile only */}
           <button
             onClick={() => setMobileOpen(o => !o)}
-            className="md:hidden flex flex-col gap-1 p-2 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
+            className="md:hidden flex flex-col gap-1 p-2 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Toggle menu"
           >
-            <span className={`block w-5 h-0.5 bg-stone-600 transition-transform origin-center ${mobileOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-stone-600 transition-opacity ${mobileOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-stone-600 transition-transform origin-center ${mobileOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-slate-600 transition-transform origin-center ${mobileOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-slate-600 transition-opacity ${mobileOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-slate-600 transition-transform origin-center ${mobileOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
           </button>
         </div>
       </div>

@@ -1,5 +1,4 @@
 ﻿import { useNavigate } from 'react-router-dom'
-import { BIAS_5 } from './Badges'
 
 /**
  * StoryFeedCard â€” Ground News style story card.
@@ -45,16 +44,16 @@ export default function StoryFeedCard({ story, featured = false }) {
   const hasPositions = positions.length > 0
   const segments = hasPositions
     ? [
-        { pct: farLeftPct,   color: "bg-blue-700",   label: "F.Left"  },
-        { pct: leanLeftPct,  color: "bg-blue-400",   label: "Lean L"  },
-        { pct: centerPct,    color: "bg-amber-400",  label: "Center"  },
-        { pct: leanRightPct, color: "bg-red-400",    label: "Lean R"  },
-        { pct: farRightPct,  color: "bg-red-700",    label: "F.Right" },
+        { pct: farLeftPct,   color: "bg-blue-700",  label: "F.Left"  },
+        { pct: leanLeftPct,  color: "bg-blue-500",  label: "Lean L"  },
+        { pct: centerPct,    color: "bg-teal-500",  label: "Center"  },
+        { pct: leanRightPct, color: "bg-red-500",   label: "Lean R"  },
+        { pct: farRightPct,  color: "bg-red-700",   label: "F.Right" },
       ]
     : [
-        { pct: fallbackL, color: "bg-blue-500",  label: `L ${fallbackL}%`  },
-        { pct: fallbackC, color: "bg-amber-400", label: `C ${fallbackC}%`  },
-        { pct: fallbackR, color: "bg-red-500",   label: `R ${fallbackR}%`  },
+        { pct: fallbackL, color: "bg-blue-600",  label: `L ${fallbackL}%`  },
+        { pct: fallbackC, color: "bg-teal-500",  label: `C ${fallbackC}%`  },
+        { pct: fallbackR, color: "bg-red-600",   label: `R ${fallbackR}%`  },
       ]
 
   const isBlindspot = !!story.blindspot_side
@@ -64,18 +63,18 @@ export default function StoryFeedCard({ story, featured = false }) {
       onClick={() => navigate(`/stories/${story.story_id}`)}
       className={`
         cursor-pointer group border border-brand-border rounded-xl overflow-hidden
-        bg-brand-card hover:border-gold-mid
-        transition-all duration-200 hover:shadow-md hover:shadow-stone-200/80
+        bg-white/90 hover:bg-white hover:border-sky-300
+        transition-all duration-300 hover:shadow-lg hover:shadow-sky-200/60 hover:-translate-y-0.5
         flex flex-col
       `}
     >
       {/* Cover image (if available) */}
       {story.cover_image && featured && (
-        <div className="w-full h-40 overflow-hidden bg-stone-100">
+        <div className="w-full h-40 overflow-hidden bg-slate-200/70">
           <img
             src={story.cover_image}
             alt=""
-            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500"
             onError={e => { e.target.style.display = 'none' }}
           />
         </div>
@@ -85,8 +84,8 @@ export default function StoryFeedCard({ story, featured = false }) {
       <div className={`p-4 flex-1 ${featured ? 'p-5' : ''}`}>
         {/* Meta row */}
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5 text-xs text-brand-muted flex-wrap">
-            <span className="font-medium text-stone-700">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 flex-wrap">
+            <span className="font-semibold text-slate-700">
               {story.outlet_count} source{story.outlet_count !== 1 ? 's' : ''}
             </span>
             <span>·</span>
@@ -94,7 +93,7 @@ export default function StoryFeedCard({ story, featured = false }) {
             {story.topic_tag && story.topic_tag !== 'General' && (
               <>
                 <span>·</span>
-                <span className="text-gold-dark bg-gold-light px-1.5 py-0.5 rounded text-[10px] font-medium">
+                <span className="text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-[10px]">
                   {story.topic_tag}
                 </span>
               </>
@@ -102,12 +101,12 @@ export default function StoryFeedCard({ story, featured = false }) {
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
             {isBlindspot && (
-              <span className="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-300 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold bg-orange-100 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full">
                 Blindspot
               </span>
             )}
             {story.has_summary && (
-              <span className="text-[10px] font-medium bg-gold-light text-gold-dark border border-gold-mid px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-medium bg-violet-100 text-violet-700 border border-violet-200 px-2 py-0.5 rounded-full">
                 AI
               </span>
             )}
@@ -116,7 +115,7 @@ export default function StoryFeedCard({ story, featured = false }) {
 
         {/* Headline */}
         <h2 className={`
-          font-bold text-stone-900 group-hover:text-gold-dark transition-colors
+          font-bold text-slate-900 group-hover:text-sky-700 transition-colors
           leading-snug line-clamp-2 mb-2
           ${featured ? 'text-lg md:text-xl' : 'text-sm md:text-base'}
         `}>
@@ -125,13 +124,13 @@ export default function StoryFeedCard({ story, featured = false }) {
 
         {/* Outlet names (featured only) */}
         {featured && story.outlets_covering?.length > 0 && (
-          <p className="text-xs text-brand-muted line-clamp-1">
+          <p className="text-xs text-slate-500 line-clamp-1">
             {story.outlets_covering.join(' · ')}
           </p>
         )}
       </div>
 
-      {/* 5-segment bias bar */}
+      {/* 5-segment Ground News style bias bar */}
       <div className="flex h-7 text-[10px] font-semibold select-none">
         {segments.map((seg, i) =>
           seg.pct > 0 ? (

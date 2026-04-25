@@ -5,7 +5,7 @@ import { FactualityBadge } from '../components/Badges'
 const BIAS_5 = {
   'Far Left':   { bg: 'bg-blue-50',  bar: 'bg-blue-700',   text: 'text-blue-700',  hex: '#1e3a8a' },
   'Lean Left':  { bg: 'bg-blue-50',  bar: 'bg-blue-400',   text: 'text-blue-600',  hex: '#2563eb' },
-  'Center':     { bg: 'bg-amber-50', bar: 'bg-amber-400',  text: 'text-amber-700', hex: '#C8973A' },
+  'Center':     { bg: 'bg-teal-50', bar: 'bg-teal-400',  text: 'text-teal-700', hex: '#0f766e' },
   'Lean Right': { bg: 'bg-red-50',   bar: 'bg-red-400',    text: 'text-red-600',   hex: '#dc2626' },
   'Far Right':  { bg: 'bg-red-50',   bar: 'bg-red-700',    text: 'text-red-700',   hex: '#7f1d1d' },
 }
@@ -21,7 +21,7 @@ function biasLabel(score) {
 function BiasBar5({ b5, total }) {
   if (!total) return <div className="h-3 bg-stone-200 rounded-full" />
   const levels = ['Far Left', 'Lean Left', 'Center', 'Lean Right', 'Far Right']
-  const colors  = ['bg-blue-700', 'bg-blue-400', 'bg-amber-400', 'bg-red-400', 'bg-red-700']
+  const colors  = ['bg-blue-700', 'bg-blue-400', 'bg-teal-400', 'bg-red-400', 'bg-red-700']
   return (
     <div className="flex rounded-full overflow-hidden h-3">
       {levels.map((lv, i) => {
@@ -57,7 +57,7 @@ export default function Outlets() {
 
   if (loading) return (
     <div className="min-h-screen bg-brand-bg flex items-center justify-center">
-      <div className="w-8 h-8 border-3 border-gold-DEFAULT border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-3 border-sky-500 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -82,7 +82,7 @@ export default function Outlets() {
               key={val}
               onClick={() => setSortBy(val)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer
-                ${sortBy === val ? 'bg-gold-DEFAULT text-white shadow-sm' : 'bg-white text-brand-muted hover:text-stone-900 border border-brand-border'}`}
+                ${sortBy === val ? 'bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-sm' : 'bg-white text-brand-muted hover:text-stone-900 border border-brand-border'}`}
             >
               {label}
             </button>
@@ -101,7 +101,7 @@ export default function Outlets() {
             const sentPct = o.avg_sentiment_score
 
             return (
-              <div key={o.outlet_id} className="bg-white border border-brand-border rounded-xl p-5 hover:border-gold-mid transition-colors shadow-sm hover:shadow-md">
+              <div key={o.outlet_id} className="bg-white border border-brand-border rounded-xl p-5 hover:border-sky-300 transition-colors shadow-sm hover:shadow-md">
                 <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
                   {/* Name + factuality */}
                   <div>
@@ -110,7 +110,7 @@ export default function Outlets() {
                         href={o.website_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-base font-bold text-stone-900 hover:text-gold-dark transition-colors"
+                        className="text-base font-bold text-stone-900 hover:text-sky-700 transition-colors"
                       >
                         {o.name} <span className="text-brand-muted text-xs">↗</span>
                       </a>
@@ -187,7 +187,7 @@ export default function Outlets() {
         <div className="mt-8 bg-stone-50 border border-brand-border rounded-xl p-4 text-xs text-brand-muted leading-relaxed">
           <strong className="text-stone-700">How bias scores work: </strong>
           HuggingFace BART zero-shot classification (60%) + keyword lexicon (30%) + outlet prior (10%).
-          Scores: <span className="text-blue-600">−1.0 Far Left</span> · <span className="text-amber-700">0.0 Center</span> · <span className="text-red-600">+1.0 Far Right</span>.
+          Scores: <span className="text-blue-600">−1.0 Far Left</span> · <span className="text-teal-700">0.0 Center</span> · <span className="text-red-600">+1.0 Far Right</span>.
           Factuality ratings based on editorial standards and historical accuracy.
         </div>
       </div>

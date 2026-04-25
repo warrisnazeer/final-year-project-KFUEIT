@@ -8,10 +8,10 @@ export default function ArticleCard({ article }) {
     : null
 
   return (
-    <div className="bg-brand-card border border-brand-border rounded-xl p-4 flex flex-col gap-3 hover:border-gold-mid transition-colors shadow-sm hover:shadow-md hover:shadow-stone-200/60">
+    <div className="bg-brand-card border border-brand-border rounded-xl p-4 flex flex-col gap-3 hover:border-sky-300 hover:shadow-sm transition-all">
       {/* Outlet + date row */}
-      <div className="flex items-center justify-between text-xs text-brand-muted">
-        <span className="font-semibold text-stone-700">{outlet}</span>
+      <div className="flex items-center justify-between text-xs text-slate-500">
+        <span className="font-semibold text-slate-700">{outlet}</span>
         {date && <span>{date}</span>}
       </div>
 
@@ -20,7 +20,7 @@ export default function ArticleCard({ article }) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm font-semibold text-stone-900 leading-snug hover:text-gold-dark transition-colors line-clamp-3"
+        className="text-sm font-semibold text-slate-900 leading-snug hover:text-sky-700 transition-colors line-clamp-3"
       >
         {title}
       </a>

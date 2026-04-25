@@ -1,24 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --surface-0: #f6faff;
+  --surface-1: #ffffff;
+  --surface-2: #edf4ff;
+  --ink-strong: #11213e;
+  --ink-muted: #5b6b83;
+  --brand-line: #d8e3f2;
+}
+
 body {
-  background-color: #F7F4EF;
-  color: #1C1A17;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background:
+    radial-gradient(1000px 500px at -10% -20%, #bae6fd 0%, rgba(186, 230, 253, 0) 65%),
+    radial-gradient(900px 460px at 110% -12%, #d9f99d 0%, rgba(217, 249, 157, 0) 65%),
+    linear-gradient(180deg, #f6faff 0%, #eff7ff 52%, #f7fbff 100%);
+  color: var(--ink-strong);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Sora', 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+a,
+button,
+input,
+select {
+  transition: all 180ms ease;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+@keyframes nn-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nn-soft-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.nn-reveal {
+  animation: nn-fade-up 420ms ease both;
+}
+
+.nn-float {
+  animation: nn-soft-float 3.2s ease-in-out infinite;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #EDE8DF; }
-::-webkit-scrollbar-thumb { background: #C8973A; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #e6edf7; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
 
 /* Bias label pills */
 .badge-left    { @apply bg-blue-50 text-blue-700 border border-blue-200; }
-.badge-center  { @apply bg-amber-50 text-amber-700 border border-amber-200; }
+.badge-center  { @apply bg-teal-50 text-teal-700 border border-teal-200; }
 .badge-right   { @apply bg-red-50 text-red-700 border border-red-200; }
 
 /* Framing tone pills */
-.badge-positive  { @apply bg-green-50 text-green-700; }
-.badge-neutral   { @apply bg-stone-100 text-stone-600; }
-.badge-negative  { @apply bg-orange-50 text-orange-700; }
+.badge-positive  { @apply bg-green-50 text-green-700 border border-green-200; }
+.badge-neutral   { @apply bg-slate-100 text-slate-700 border border-slate-200; }
+.badge-negative  { @apply bg-orange-50 text-orange-700 border border-orange-200; }

@@ -29,7 +29,7 @@ function trackDiversity(story) {
   } catch {}
 }
 
-function StatRow({ label, value, color = 'text-stone-900' }) {
+function StatRow({ label, value, color = 'text-slate-900' }) {
   return (
     <div className="flex items-center justify-between">
       <span className="text-xs text-brand-muted">{label}</span>
@@ -42,7 +42,7 @@ function ArticleCard({ article }) {
   const c = BIAS_5[article.bias_label] || BIAS_5['Center']
   const score = article.bias_score ?? null
   return (
-    <div className={`rounded-xl border p-4 ${c.bg} ${c.border} transition-all hover:brightness-110`}>
+    <div className={`rounded-xl border p-4 ${c.bg} ${c.border} transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md`}>
       <div className="flex items-start justify-between gap-3 mb-2">
         <span className={`text-xs font-bold uppercase tracking-wider ${c.text} shrink-0`}>
           {article.outlet}
@@ -57,7 +57,7 @@ function ArticleCard({ article }) {
         href={article.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm font-medium text-stone-800 hover:text-gold-dark leading-snug block mb-2"
+        className="text-sm font-medium text-slate-800 hover:text-sky-700 leading-snug block mb-2"
       >
         {article.title}
         <span className="text-brand-muted ml-1 text-xs">&#x2197;</span>
@@ -141,7 +141,7 @@ export default function StoryDetail() {
 
   if (loading) return (
     <div className="min-h-screen bg-brand-bg flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-gold-DEFAULT border-t-transparent rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -149,7 +149,7 @@ export default function StoryDetail() {
     <div className="min-h-screen bg-brand-bg flex items-center justify-center">
       <div className="text-center text-brand-muted">
         <p className="text-lg mb-3">Story not found.</p>
-        <Link to="/" className="text-gold-DEFAULT hover:underline">&larr; Back to Feed</Link>
+        <Link to="/" className="text-sky-600 hover:underline">&larr; Back to Feed</Link>
       </div>
     </div>
   )
@@ -189,20 +189,20 @@ export default function StoryDetail() {
     : []
 
   return (
-    <div className="min-h-screen bg-brand-bg pb-20">
+    <div className="min-h-screen bg-brand-bg pb-20 nn-reveal">
 
       {/* Sticky top bar */}
-      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-brand-border shadow-sm">
+      <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-brand-border shadow-[0_10px_30px_-24px_rgba(2,6,23,0.5)]">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="text-brand-muted hover:text-stone-900 text-sm transition-colors">
+          <Link to="/" className="text-brand-muted hover:text-slate-900 text-sm transition-colors">
             &larr; Back
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-brand-muted text-xs hidden sm:block">{timeAgo(story.latest_date)}</span>
             <button
               onClick={handleShare}
-              className="flex items-center gap-1.5 px-3 py-1 bg-stone-100 hover:bg-stone-200 border border-brand-border
-                         text-stone-600 hover:text-stone-900 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 bg-sky-50 hover:bg-sky-100 border border-sky-200
+                         text-sky-700 hover:text-sky-800 rounded-lg text-xs font-medium transition-colors cursor-pointer"
             >
               {copied ? '✓ Copied!' : '⤴ Share'}
             </button>
@@ -212,17 +212,62 @@ export default function StoryDetail() {
 
       <div className="max-w-6xl mx-auto px-4 pt-6">
 
-        {/* Cover image */}
-        {story.cover_image && (
-          <div className="w-full h-52 rounded-xl overflow-hidden mb-4">
-            <img
-              src={story.cover_image}
-              alt={story.story_title}
-              className="w-full h-full object-cover"
-              onError={e => { e.target.style.display = 'none' }}
-            />
-          </div>
-        )}
+        {/* Story hero */}
+        <div className={`relative overflow-hidden rounded-2xl border border-brand-border mb-5 ${story.cover_image ? 'h-[300px] md:h-[360px]' : 'bg-white p-6 md:p-8'}`}>
+          {story.cover_image ? (
+            <>
+              <img
+                src={story.cover_image}
+                alt={story.story_title}
+                className="w-full h-full object-cover"
+                onError={e => { e.target.style.display = 'none' }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/35 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-5 md:p-7">
+                <div className="flex flex-wrap items-center gap-2 text-xs mb-3">
+                  <span className="bg-white/20 text-white backdrop-blur-sm border border-white/30 px-2.5 py-1 rounded-full font-semibold">
+                    {story.outlet_count} sources
+                  </span>
+                  <span className="bg-white/20 text-white backdrop-blur-sm border border-white/30 px-2.5 py-1 rounded-full font-semibold">
+                    {story.article_count} articles
+                  </span>
+                  {story.topic_tag && story.topic_tag !== 'General' && (
+                    <span className="bg-cyan-300/90 text-cyan-950 px-2.5 py-1 rounded-full font-semibold">
+                      {story.topic_tag}
+                    </span>
+                  )}
+                </div>
+                <h1 className="text-white text-2xl md:text-4xl font-bold leading-tight max-w-4xl">
+                  {summary?.story_title || story.story_title}
+                </h1>
+                <div className="flex flex-wrap items-center gap-3 text-xs mt-3 text-slate-100/90">
+                  {story.left_count > 0 && <span className="text-blue-200 font-semibold">{story.left_count} Left</span>}
+                  {story.center_count > 0 && <span className="text-teal-200 font-semibold">{story.center_count} Center</span>}
+                  {story.right_count > 0 && <span className="text-red-200 font-semibold">{story.right_count} Right</span>}
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight mb-3">
+                {summary?.story_title || story.story_title}
+              </h1>
+              <div className="flex flex-wrap items-center gap-2 text-sm text-brand-muted">
+                <span className="font-medium text-slate-700">{story.outlet_count} sources</span>
+                <span>&middot;</span>
+                <span>{story.article_count} articles</span>
+                {story.topic_tag && story.topic_tag !== 'General' && (
+                  <>
+                    <span>&middot;</span>
+                    <span className="text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full border border-sky-200">
+                      {story.topic_tag}
+                    </span>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Blindspot banner */}
         {story.blindspot_side && (
@@ -235,39 +280,16 @@ export default function StoryDetail() {
           </div>
         )}
 
-        {/* Story title */}
-        <h1 className="text-2xl md:text-3xl font-bold text-stone-900 leading-tight mb-3">
-          {summary?.story_title || story.story_title}
-        </h1>
-
-        {/* Meta row */}
-        <div className="flex flex-wrap items-center gap-2 text-sm text-brand-muted mb-5">
-          <span className="font-medium text-stone-700">{story.outlet_count} sources</span>
-          <span>&middot;</span>
-          <span>{story.article_count} articles</span>
-          {story.topic_tag && story.topic_tag !== 'General' && (
-            <>
-              <span>&middot;</span>
-              <span className="text-xs bg-gold-light text-gold-dark px-2 py-0.5 rounded-full border border-gold-mid">
-                {story.topic_tag}
-              </span>
-            </>
-          )}
-          {story.left_count   > 0 && <span className="text-blue-600">{story.left_count} Left</span>}
-          {story.center_count > 0 && <span className="text-amber-700">{story.center_count} Center</span>}
-          {story.right_count  > 0 && <span className="text-red-600">{story.right_count} Right</span>}
-        </div>
-
         {/* Tab bar */}
-        <div className="flex gap-1 bg-stone-100 border border-brand-border rounded-xl p-1 w-fit mb-6 overflow-x-auto">
+        <div className="flex gap-1 bg-white border border-brand-border rounded-xl p-1.5 w-fit mb-6 overflow-x-auto shadow-sm">
           {TABS.map(tab => {
             const isActive = activeTab === tab
             const activeCls = isActive
-              ? tab === 'Left'   ? 'bg-blue-600 text-white'
-              : tab === 'Right'  ? 'bg-red-600 text-white'
-              : tab === 'Center' ? 'bg-amber-500 text-white'
-              :                   'bg-white text-stone-900 shadow-sm'
-              : 'text-brand-muted hover:text-stone-900'
+              ? tab === 'Left'   ? 'bg-blue-600 text-white shadow-sm'
+              : tab === 'Right'  ? 'bg-red-600 text-white shadow-sm'
+              : tab === 'Center' ? 'bg-teal-500 text-white shadow-sm'
+              :                   'bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-sm'
+              : 'text-brand-muted hover:text-slate-900 hover:bg-slate-50'
             return (
               <button
                 key={tab}
@@ -288,7 +310,7 @@ export default function StoryDetail() {
             <div className={`rounded-xl border px-4 py-3 text-xs leading-relaxed mb-4 ${
               isNonPolitical
                 ? 'bg-amber-50 border-amber-200 text-amber-800'
-                : 'bg-stone-50 border-brand-border text-brand-muted'
+                : 'bg-white border-brand-border text-brand-muted shadow-sm'
             }`}>
               {isNonPolitical ? (
                 <>
@@ -319,18 +341,18 @@ export default function StoryDetail() {
 
             {activeTab !== 'Bias Comparison' && summarizing && (
               <div className="bg-white border border-brand-border rounded-xl p-5 flex items-center gap-3 text-brand-muted shadow-sm">
-                <div className="w-5 h-5 border-2 border-gold-DEFAULT border-t-transparent rounded-full animate-spin shrink-0" />
+                <div className="w-5 h-5 border-2 border-sky-500 border-t-transparent rounded-full animate-spin shrink-0" />
                 <span className="text-sm">Generating AI summary&hellip;</span>
               </div>
             )}
 
             {activeTab !== 'Bias Comparison' && summary && summary.what_happened && !summarizing && (
-              <div className="bg-white border border-brand-border rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-white border border-brand-border rounded-xl overflow-hidden shadow-[0_18px_40px_-28px_rgba(2,132,199,0.4)]">
                 {/* Header */}
-                <div className="flex items-center gap-2 px-5 pt-5 pb-3 border-b border-brand-border bg-gold-light">
-                  <span className="text-gold-dark text-base">&#10022;</span>
-                  <span className="text-xs font-bold uppercase tracking-widest text-gold-dark">AI Analysis</span>
-                  <span className="text-[10px] bg-gold-DEFAULT text-white border border-gold-dark px-2 py-0.5 rounded-full ml-1">
+                <div className="flex items-center gap-2 px-5 pt-4 pb-3 border-b border-brand-border bg-gradient-to-r from-sky-50 to-cyan-50">
+                  <span className="text-sky-700 text-base">&#10022;</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-sky-700">AI Analysis</span>
+                  <span className="text-[10px] bg-gradient-to-r from-cyan-500 to-sky-500 text-white border border-sky-600 px-2 py-0.5 rounded-full ml-1">
                     Llama 3.3 70B · Groq
                   </span>
                 </div>
@@ -365,7 +387,7 @@ export default function StoryDetail() {
                       <ul className="space-y-2">
                         {bulletFacts.map((fact, i) => (
                           <li key={i} className="flex gap-3 text-sm text-stone-800 leading-relaxed">
-                            <span className="text-gold-DEFAULT shrink-0 mt-0.5 font-bold text-base leading-none">&#8226;</span>
+                            <span className="text-sky-600 shrink-0 mt-0.5 font-bold text-base leading-none">&#8226;</span>
                             {fact}
                           </li>
                         ))}
@@ -375,8 +397,8 @@ export default function StoryDetail() {
 
                   {/* Why It Matters callout */}
                   {summary.why_it_matters && (
-                    <div className="bg-gold-light border border-gold-mid rounded-lg p-4">
-                      <p className="text-xs font-bold uppercase tracking-widest text-gold-dark mb-2">Why It Matters</p>
+                    <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+                      <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 mb-2">Why It Matters</p>
                       <p className="text-stone-700 text-sm leading-relaxed">{summary.why_it_matters}</p>
                     </div>
                   )}
@@ -388,7 +410,7 @@ export default function StoryDetail() {
               summary && summary.what_happened ? (
                 <div className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 shadow-sm">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-blue-700 mb-1">
                         &#9664; Left / Liberal Framing
                       </p>
@@ -397,7 +419,7 @@ export default function StoryDetail() {
                         {summary.left_framing || 'No distinct left framing detected.'}
                       </p>
                     </div>
-                    <div className="bg-red-50 border border-red-200 rounded-xl p-5">
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-5 shadow-sm">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-red-700 mb-1">
                         Right / Conservative Framing &#9654;
                       </p>
@@ -409,8 +431,8 @@ export default function StoryDetail() {
                   </div>
                   {/* Why It Matters also shown in bias tab */}
                   {summary.why_it_matters && (
-                    <div className="bg-gold-light border border-gold-mid rounded-xl p-4">
-                      <p className="text-xs font-bold uppercase tracking-widest text-gold-dark mb-2">Why It Matters</p>
+                    <div className="bg-cyan-50 border border-cyan-200 rounded-xl p-4">
+                      <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 mb-2">Why It Matters</p>
                       <p className="text-stone-700 text-sm leading-relaxed">{summary.why_it_matters}</p>
                     </div>
                   )}
@@ -467,7 +489,7 @@ export default function StoryDetail() {
                 <StatRow label="Total Sources"  value={story.outlet_count} />
                 {farLeftCnt   > 0 && <StatRow label="Far Left"   value={farLeftCnt}   color="text-blue-700"  />}
                 {leanLeftCnt  > 0 && <StatRow label="Lean Left"  value={leanLeftCnt}  color="text-blue-600"  />}
-                {centerCnt    > 0 && <StatRow label="Center"     value={centerCnt}    color="text-amber-700" />}
+                {centerCnt    > 0 && <StatRow label="Center"     value={centerCnt}    color="text-teal-700" />}
                 {leanRightCnt > 0 && <StatRow label="Lean Right" value={leanRightCnt} color="text-red-600"   />}
                 {farRightCnt  > 0 && <StatRow label="Far Right"  value={farRightCnt}  color="text-red-700"   />}
                 <StatRow label="Total Articles" value={story.article_count} />
@@ -491,7 +513,7 @@ export default function StoryDetail() {
                   </div>
                 )}
                 {centerPct > 0 && (
-                  <div className="bg-amber-400 text-white flex items-center justify-center flex-1"
+                  <div className="bg-teal-400 text-white flex items-center justify-center flex-1"
                     style={{ minWidth: `${centerPct}%` }}>
                     {centerPct >= 15 ? `C ${centerPct}%` : centerPct >= 6 ? `${centerPct}%` : ''}
                   </div>
@@ -527,7 +549,7 @@ export default function StoryDetail() {
                       const c = BIAS_5[a.bias_label] || BIAS_5['Center']
                       return (
                         <li key={a.article_id} className="flex items-start gap-2">
-                          <span className="text-[10px] font-mono text-gold-mid shrink-0 mt-0.5 w-3">{i + 1}.</span>
+                          <span className="text-[10px] font-mono text-sky-600 shrink-0 mt-0.5 w-3">{i + 1}.</span>
                           <div className="min-w-0">
                             <span className={`text-[10px] font-bold uppercase ${c.text}`}>{a.outlet}</span>
                             <p className="text-[10px] text-brand-muted">{timeAgo(a.publish_date)}</p>
@@ -574,8 +596,8 @@ export default function StoryDetail() {
             <button
               onClick={() => generateSummary(true)}
               disabled={summarizing}
-              className="w-full py-2.5 bg-white hover:bg-gold-light border border-brand-border
-                         text-brand-muted hover:text-gold-dark rounded-xl text-sm font-medium
+              className="w-full py-2.5 bg-white hover:bg-sky-50 border border-brand-border
+                         text-brand-muted hover:text-sky-700 rounded-xl text-sm font-medium
                          transition-colors disabled:opacity-40 cursor-pointer"
             >
               {summarizing ? '&#10022; Generating…' : '↺ Regenerate AI Summary'}

@@ -7,9 +7,9 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-# All Pakistani English news outlets (7 original + 6 new + 5 more = 18 total)
+# All Pakistani English news outlets (15 active)
 OUTLETS = [
-    # ── Original 7 ───────────────────────────────────────────────────────────
+    # ── Original ───────────────────────────────────────────────────────────
     {
         "name": "Dawn",
         "rss_url": "https://www.dawn.com/feeds/home",
@@ -29,11 +29,6 @@ OUTLETS = [
         "name": "Express Tribune",
         "rss_url": "https://news.google.com/rss/search?q=site:tribune.com.pk&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://tribune.com.pk",
-    },
-    {
-        "name": "The News International",
-        "rss_url": "https://www.thenews.com.pk/rss/1/1",
-        "website_url": "https://www.thenews.com.pk",
     },
     {
         "name": "Samaa News",
@@ -62,11 +57,6 @@ OUTLETS = [
         "website_url": "https://nation.com.pk",
     },
     {
-        "name": "Business Recorder",
-        "rss_url": "https://news.google.com/rss/search?q=site:brecorder.com&hl=en-PK&gl=PK&ceid=PK:en",
-        "website_url": "https://www.brecorder.com",
-    },
-    {
         "name": "Naya Daur",
         "rss_url": "https://news.google.com/rss/search?q=site:nayadaur.tv&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://nayadaur.tv",
@@ -91,11 +81,6 @@ OUTLETS = [
         "name": "The Friday Times",
         "rss_url": "https://news.google.com/rss/search?q=site:thefridaytimes.com&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://thefridaytimes.com",
-    },
-    {
-        "name": "92 News HD",
-        "rss_url": "https://news.google.com/rss/search?q=site:92newshd.tv&hl=en-PK&gl=PK&ceid=PK:en",
-        "website_url": "https://92newshd.tv",
     },
     {
         "name": "Pakistan Observer",

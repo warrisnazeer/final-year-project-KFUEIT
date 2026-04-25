@@ -284,8 +284,11 @@ scheduler = BackgroundScheduler(daemon=True)
 
 @app.on_event("startup")
 def startup():
+    import threading
     seed_outlets()
-    run_pipeline()                                   # run immediately
+    # Run the initial pipeline in a background thread so it doesn't block server startup
+    t = threading.Thread(target=run_pipeline, daemon=True)
+    t.start()
     scheduler.add_job(run_pipeline, "interval", hours=1, id="pipeline")
     scheduler.start()
     logger.info("Scheduler started — pipeline will run every hour.")

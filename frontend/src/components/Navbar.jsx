@@ -33,7 +33,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-13">
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0">
-          <img src="/logo.jpg" alt="News Narrative Logo" className="h-9 md:h-11 object-contain -ml-1 mix-blend-multiply" />
+          <img src="/logo.jpg" alt="News Narrative Logo" className="h-10 md:h-12 scale-150 transform object-contain ml-4 mix-blend-multiply" />
         </Link>
 
         {/* Desktop nav links */}

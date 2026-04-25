@@ -16,92 +16,96 @@ export default function CoverageBar({ outlets = [], compact = false }) {
     return ((clamped + 1) / 2) * 90 + 5
   }
 
-  const labelColor = (label) => {
-    if (label === 'Left')  return 'bg-blue-500 text-white'
-    if (label === 'Right') return 'bg-red-500 text-white'
-    return 'bg-teal-500 text-white'
-  }
-
   const dotColor = (label) => {
     if (label === 'Left')  return '#3b82f6'
     if (label === 'Right') return '#ef4444'
     return '#14b8a6'
   }
 
-  const barH = compact ? 'h-6' : 'h-8'
+  // Group outlets by their percentage to avoid overlapping text/dots
+  const grouped = {}
+  outlets.forEach(o => {
+    const pct = toPercent(o.bias_score).toFixed(1)
+    if (!grouped[pct]) grouped[pct] = []
+    grouped[pct].push(o)
+  })
+
+  const barH = compact ? 'h-6' : 'h-10'
   const fontSize = compact ? 'text-[10px]' : 'text-xs'
 
   return (
-    <div className="w-full select-none">
+    <div className="w-full select-none mt-2 mb-4">
       {/* Axis labels */}
-      <div className={`flex justify-between mb-1 ${fontSize} font-semibold`}>
+      <div className={`flex justify-between mb-2 ${fontSize} font-bold uppercase tracking-wider`}>
         <span className="text-blue-600">◀ Left</span>
         <span className="text-teal-600">Center</span>
         <span className="text-red-600">Right ▶</span>
       </div>
 
       {/* Bar + outlet markers */}
-      <div className={`relative w-full ${barH} rounded-full overflow-visible`}
-          style={{ background: 'linear-gradient(to right, #bfdbfe 0%, #99f6e4 50%, #fecaca 100%)' }}>
+      <div className={`relative w-full ${barH} rounded-xl overflow-visible border border-slate-200/60 shadow-inner`}
+          style={{ background: 'linear-gradient(90deg, rgba(59,130,246,0.15) 0%, rgba(20,184,166,0.15) 50%, rgba(239,68,68,0.15) 100%)' }}>
 
         {/* Center line */}
-        <div className="absolute top-0 bottom-0 left-1/2 w-px bg-slate-500/40" />
+        <div className="absolute top-0 bottom-0 left-1/2 w-[2px] bg-teal-400/50 -translate-x-1/2" />
+        <div className="absolute top-0 bottom-0 left-[25%] w-px bg-slate-300/40 -translate-x-1/2" />
+        <div className="absolute top-0 bottom-0 left-[75%] w-px bg-slate-300/40 -translate-x-1/2" />
 
-        {/* Outlet dots */}
-        {outlets.map((o, i) => {
-          const pct = toPercent(o.bias_score)
+        {/* Outlet dots stacked */}
+        {Object.entries(grouped).map(([pct, group], idx) => {
           return (
             <div
-              key={o.outlet + i}
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 group"
+              key={idx}
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center gap-1 group z-10 hover:z-20 cursor-default"
               style={{ left: `${pct}%` }}
             >
-              {/* Dot */}
-              <div
-                className="rounded-full border-2 border-white cursor-default shadow-md transition-transform group-hover:scale-125"
-                style={{
-                  width: compact ? 10 : 14,
-                  height: compact ? 10 : 14,
-                  backgroundColor: dotColor(o.bias_label),
-                }}
-              />
-              {/* Tooltip on hover */}
+              {/* Stacked markers */}
+              <div className="flex flex-col items-center gap-0.5">
+                {group.map((o, i) => (
+                  compact ? (
+                    <div
+                      key={i}
+                      className="rounded-full border border-white shadow-sm transition-transform group-hover:scale-110"
+                      style={{ width: 10, height: 10, backgroundColor: dotColor(o.bias_label) }}
+                    />
+                  ) : (
+                    <div
+                      key={i}
+                      title={o.outlet}
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm transition-transform group-hover:scale-110 bg-white ring-2 ring-white"
+                      style={{
+                        color: dotColor(o.bias_label),
+                        border: `2px solid ${dotColor(o.bias_label)}`
+                      }}
+                    >
+                      {o.outlet.slice(0, 2).toUpperCase()}
+                    </div>
+                  )
+                ))}
+              </div>
+
+              {/* Combined Tooltip on hover */}
               <div className={`
-                absolute bottom-full mb-1 left-1/2 -translate-x-1/2
-                bg-slate-900 text-white ${fontSize} px-2 py-1 rounded shadow-lg
-                whitespace-nowrap pointer-events-none z-10
-                opacity-0 group-hover:opacity-100 transition-opacity
+                absolute bottom-full mb-2 left-1/2 -translate-x-1/2
+                bg-slate-900/95 backdrop-blur-sm text-white ${fontSize} p-2 rounded-lg shadow-xl
+                whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity border border-slate-700
               `}>
-                {o.outlet}
-                <div className={`text-[9px] text-center ${o.bias_label === 'Left' ? 'text-blue-300' : o.bias_label === 'Right' ? 'text-red-300' : 'text-teal-300'}`}>
-                  {o.bias_label} ({o.bias_score >= 0 ? '+' : ''}{(o.bias_score ?? 0).toFixed(2)})
+                <div className="font-semibold mb-1 text-slate-200 border-b border-slate-700 pb-1">
+                  {group[0].bias_label} ({group[0].bias_score >= 0 ? '+' : ''}{(group[0].bias_score ?? 0).toFixed(2)})
                 </div>
+                {group.map((o, i) => (
+                  <div key={i} className="flex items-center gap-2 mt-1">
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dotColor(o.bias_label) }} />
+                    <span className="font-medium text-white">{o.outlet}</span>
+                  </div>
+                ))}
+                {/* Tooltip caret */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/95" />
               </div>
             </div>
           )
         })}
       </div>
-
-      {/* Outlet name labels below bar (non-compact only) */}
-      {!compact && (
-        <div className="relative w-full mt-3" style={{ height: 20 }}>
-          {outlets.map((o, i) => {
-            const pct = toPercent(o.bias_score)
-            return (
-              <span
-                key={o.outlet + i}
-                className={`absolute -translate-x-1/2 text-[10px] font-medium ${
-                  o.bias_label === 'Left' ? 'text-blue-400' :
-                  o.bias_label === 'Right' ? 'text-red-500' : 'text-teal-600'
-                }`}
-                style={{ left: `${pct}%` }}
-              >
-                {o.outlet.replace(' News', '').replace(' International', '').replace(' Tribune', ' Trib.')}
-              </span>
-            )
-          })}
-        </div>
-      )}
     </div>
   )
 }

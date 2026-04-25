@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 /**
  * StoryFeedCard â€” Ground News style story card.
@@ -62,9 +62,9 @@ export default function StoryFeedCard({ story, featured = false }) {
     <div
       onClick={() => navigate(`/stories/${story.story_id}`)}
       className={`
-        cursor-pointer group border border-brand-border rounded-xl overflow-hidden
-        bg-white/90 hover:bg-white hover:border-sky-300
-        transition-all duration-300 hover:shadow-lg hover:shadow-sky-200/60 hover:-translate-y-0.5
+        cursor-pointer group border border-brand-border/60 rounded-2xl overflow-hidden
+        bg-white hover:border-sky-200
+        transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1
         flex flex-col
       `}
     >
@@ -130,17 +130,15 @@ export default function StoryFeedCard({ story, featured = false }) {
         )}
       </div>
 
-      {/* 5-segment Ground News style bias bar */}
-      <div className="flex h-7 text-[10px] font-semibold select-none">
+      {/* 5-segment Ground News style bias bar - Made sleek and thin */}
+      <div className="flex h-1.5 w-full opacity-90 group-hover:opacity-100 transition-opacity">
         {segments.map((seg, i) =>
           seg.pct > 0 ? (
             <div
               key={i}
-              className={`${seg.color} text-white/90 flex items-center justify-center shrink-0 transition-all`}
+              className={`${seg.color} transition-all`}
               style={{ width: `${seg.pct}%`, flexGrow: seg.pct === 0 ? 0 : undefined }}
-            >
-              {seg.pct >= 18 ? seg.label : seg.pct >= 10 ? `${seg.pct}%` : ''}
-            </div>
+            />
           ) : null
         )}
       </div>

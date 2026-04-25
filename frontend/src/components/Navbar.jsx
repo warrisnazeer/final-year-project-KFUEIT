@@ -32,13 +32,8 @@ export default function Navbar() {
     <nav className="bg-white/90 backdrop-blur-md border-b border-brand-border sticky top-0 z-50 shadow-[0_10px_30px_-24px_rgba(2,6,23,0.5)]">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-13">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-1.5 font-bold text-base text-slate-900 shrink-0">
-          <span className="w-6 h-6 rounded bg-gradient-to-br from-teal-500 to-sky-500 flex items-center justify-center text-[11px] font-black text-white shadow-sm">
-            N
-          </span>
-          <span className="tracking-tight">
-            News<span className="text-sky-600">Narrative</span>
-          </span>
+        <Link to="/" className="flex items-center shrink-0">
+          <img src="/logo.jpg" alt="News Narrative Logo" className="h-9 md:h-11 object-contain -ml-1 mix-blend-multiply" />
         </Link>
 
         {/* Desktop nav links */}

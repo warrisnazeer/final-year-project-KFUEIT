@@ -235,36 +235,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Overall Bias bar */}
-                {stats && (
-                  <div className="pb-4 border-b border-brand-border">
-                    <p className="text-xs text-brand-muted mb-2">Overall Bias</p>
-                    <div className="flex rounded overflow-hidden h-5 text-[10px] font-semibold">
-                      {(bias.Left   ?? 0) > 0 && (
-                        <div className="bg-blue-500 text-white flex items-center justify-center"
-                          style={{ width: `${((bias.Left ?? 0) / (stats.total_articles || 1)) * 100}%` }}>
-                          L
-                        </div>
-                      )}
-                      {(bias.Center ?? 0) > 0 && (
-                        <div className="bg-amber-400 text-white flex items-center justify-center flex-1">
-                          C
-                        </div>
-                      )}
-                      {(bias.Right  ?? 0) > 0 && (
-                        <div className="bg-red-500 text-white flex items-center justify-center"
-                          style={{ width: `${((bias.Right ?? 0) / (stats.total_articles || 1)) * 100}%` }}>
-                          R
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex justify-between text-[10px] text-brand-muted mt-1">
-                      <span className="text-blue-600">{bias.Left ?? 0} left</span>
-                      <span>{bias.Center ?? 0} center</span>
-                      <span className="text-red-600">{bias.Right ?? 0} right</span>
-                    </div>
-                  </div>
-                )}
 
                 {/* Reading Diversity Score */}
                 {divScore && (

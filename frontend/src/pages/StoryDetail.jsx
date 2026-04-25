@@ -466,8 +466,8 @@ export default function StoryDetail() {
             {/* Methodology note */}
             <div className="bg-stone-50 border border-brand-border rounded-xl p-4 text-xs text-brand-muted leading-relaxed">
               <strong className="text-stone-700">How bias is measured:</strong> Scores combine
-              HuggingFace BART zero-shot classification (60%), Pakistani-context keywords (30%), and
-              outlet editorial priors (10%). In Pakistan&apos;s media landscape,{' '}
+              Groq Llama 3.3 LLM analysis (40%), HuggingFace BART zero-shot classification (25%),
+              Pakistani-context keywords (20%), and outlet editorial priors (15%). In Pakistan&apos;s media landscape,{' '}
               <span className="text-blue-600">Left = liberal, pro-civilian, critical of establishment</span>{' '}
               and{' '}
               <span className="text-red-600">Right = pro-establishment, security-state aligned</span>{' '}

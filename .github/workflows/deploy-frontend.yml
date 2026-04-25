@@ -40,6 +40,19 @@ jobs:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
         run: npm run build
 
+      - name: Validate FTP secrets
+        run: |
+          if [ -z "${{ secrets.FTP_SERVER }}" ] || [ -z "${{ secrets.FTP_USERNAME }}" ] || [ -z "${{ secrets.FTP_PASSWORD }}" ] || [ -z "${{ secrets.FTP_SERVER_DIR }}" ]; then
+            echo "❌ Missing FTP secrets. Please set these in GitHub repo Settings > Secrets:"
+            echo "   - FTP_SERVER (e.g., ftp.example.com)"
+            echo "   - FTP_USERNAME (e.g., user@example.com)"
+            echo "   - FTP_PASSWORD (your FTP password)"
+            echo "   - FTP_SERVER_DIR (e.g., /public_html/ or /www/)"
+            echo "   - FTP_PROTOCOL (optional: ftps or ftp, defaults to ftps)"
+            exit 1
+          fi
+          echo "✅ All FTP secrets configured"
+
       - name: Deploy dist to hosting via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

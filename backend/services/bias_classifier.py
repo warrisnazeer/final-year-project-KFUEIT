@@ -141,11 +141,60 @@ def _zero_shot_api(text: str) -> dict:
         return None
 
 
+# ── Topics where political bias analysis is not meaningful ───────────────────
+BIAS_SKIP_TOPICS = {"Sports", "Technology", "Business"}
+
+# Quick keyword lists to detect non-political topics at article level
+_SPORTS_KEYWORDS = [
+    "cricket", "psl", "match", "t20", "odi", "test match", "pcb", "tournament",
+    "stadium", "football", "hockey", "squash", "world cup", "innings", "wicket",
+    "batsman", "bowler", "goal", "defeat", "win against", "semifinal", "final",
+    "qualifier", "champions", "league", "cup", "batting", "bowling",
+]
+_TECH_KEYWORDS = [
+    "technology", "software", "app ", "ai ", "artificial intelligence", "startup",
+    "5g", "cybersecurity", "digital", "smartphone", "gadget", "review", "tech",
+    "internet", "telecom", "google", "meta", "apple", "samsung", "huawei",
+]
+_BUSINESS_KEYWORDS = [
+    "company", "corporation", "stock", "shares", "ipo", "startup", "merger",
+    "acquisition", "quarterly", "profit", "loss", "ceo", "revenue", "brand",
+]
+
+def _detect_non_political_topic(title: str) -> str | None:
+    """Quick check if an article title belongs to a non-political topic."""
+    title_lower = title.lower()
+    sports_hits = sum(1 for kw in _SPORTS_KEYWORDS if kw in title_lower)
+    if sports_hits >= 2:
+        return "Sports"
+    tech_hits = sum(1 for kw in _TECH_KEYWORDS if kw in title_lower)
+    if tech_hits >= 2:
+        return "Technology"
+    biz_hits = sum(1 for kw in _BUSINESS_KEYWORDS if kw in title_lower)
+    if biz_hits >= 2:
+        return "Business"
+    return None
+
+
 def classify_article(title: str, content: str, outlet_name: str) -> dict:
     """
     Main classification function.
     Returns: {bias_score, bias_label, confidence_score, zero_shot_scores}
+
+    Articles detected as Sports, Technology, or Business are assigned
+    neutral Center scores because political bias analysis is not meaningful.
     """
+    # Skip bias for non-political topics — return neutral immediately
+    non_political = _detect_non_political_topic(title)
+    if non_political:
+        logger.info(f"Skipping bias for {non_political} article: {title[:60]}")
+        return {
+            "bias_score": 0.0,
+            "bias_label": "Center",
+            "confidence_score": 1.0,
+            "zero_shot_scores": None,
+        }
+
     text = f"{title}. {content or ''}"
     prior = OUTLET_PRIORS.get(outlet_name, 0.0)
     kw_score = _keyword_score(text)
@@ -185,3 +234,4 @@ def classify_article(title: str, content: str, outlet_name: str) -> dict:
         "confidence_score": round(confidence, 4),
         "zero_shot_scores": json.dumps(zs_raw) if zs_raw else None,
     }
+

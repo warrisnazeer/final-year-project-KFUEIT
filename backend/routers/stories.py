@@ -108,11 +108,16 @@ def _build_story_dict(story_id: int, db: Session, include_articles: bool = True)
             latest_date = a.publish_date.isoformat()
             break
 
+    topic_tag = getattr(story_row, "topic_tag", "General") or "General"
+    # Topics where political bias analysis is not meaningful
+    bias_skip = topic_tag in {"Sports", "Technology", "Business"}
+
     result = {
         "story_id":       story_id,
         "story_title":    story_title,
         "cover_image":    cover_image,
-        "topic_tag":      getattr(story_row, "topic_tag", "General") or "General",
+        "topic_tag":      topic_tag,
+        "bias_skip":      bias_skip,
         "blindspot_side": getattr(story_row, "blindspot_side", None),
         "outlets_covering": list(outlet_positions.keys()),
         "outlet_count":   len(outlet_positions),

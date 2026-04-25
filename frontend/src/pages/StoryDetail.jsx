@@ -304,20 +304,19 @@ export default function StoryDetail() {
 
         {/* Pakistani bias context note */}
         {(() => {
-          const NON_POLITICAL = ['Sports', 'Technology', 'General']
-          const isNonPolitical = NON_POLITICAL.includes(story.topic_tag)
+          const biasSkip = story.bias_skip
           return (
             <div className={`rounded-xl border px-4 py-3 text-xs leading-relaxed mb-4 ${
-              isNonPolitical
+              biasSkip
                 ? 'bg-amber-50 border-amber-200 text-amber-800'
                 : 'bg-white border-brand-border text-brand-muted shadow-sm'
             }`}>
-              {isNonPolitical ? (
+              {biasSkip ? (
                 <>
                   <span className="font-semibold text-amber-700">Note:</span> This is a{' '}
-                  <span className="font-semibold">{story.topic_tag}</span> story — bias scores here
-                  reflect <em>framing style</em> (critical &amp; independent vs. state-aligned tone)
-                  rather than direct political alignment.
+                  <span className="font-semibold">{story.topic_tag}</span> story — political
+                  bias analysis is <span className="font-semibold">not applicable</span> to
+                  this category. All outlets are shown with neutral scores.
                 </>
               ) : (
                 <>

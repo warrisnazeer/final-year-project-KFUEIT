@@ -35,8 +35,8 @@ def group_articles(articles: list) -> dict:
     if len(articles) == 1:
         return {articles[0]["article_id"]: 0}
 
-    # Use titles only — more distinctive than title+content for short news
-    texts = [a["title"] for a in articles]
+    # Use titles and a snippet of content to improve matching context
+    texts = [f"{a['title']} {str(a.get('content', ''))[:200]}" for a in articles]
 
     try:
         vectorizer = TfidfVectorizer(
@@ -62,10 +62,10 @@ def group_articles(articles: list) -> dict:
             if len(group) >= MAX_CLUSTER_SIZE:
                 continue
 
-            # Complete linkage: new article must be similar to ALL members
-            min_sim = min(sim_matrix[i][j] for j in group)
-            if min_sim >= SIMILARITY_THRESHOLD and min_sim > best_avg_sim:
-                best_avg_sim = min_sim
+            # Average linkage: new article must be similar on average to members
+            avg_sim = sum(sim_matrix[i][j] for j in group) / len(group)
+            if avg_sim >= 0.20 and avg_sim > best_avg_sim:
+                best_avg_sim = avg_sim
                 best_group = g_idx
 
         if best_group is not None:

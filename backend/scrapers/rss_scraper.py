@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 # All Pakistani English news outlets (15 active)
 OUTLETS = [
-    # ── Original ───────────────────────────────────────────────────────────
+    # ── Core outlets ──────────────────────────────────────────────────────────
     {
         "name": "Dawn",
         "rss_url": "https://www.dawn.com/feeds/home",
@@ -40,12 +40,7 @@ OUTLETS = [
         "rss_url": "https://news.google.com/rss/search?q=site:dunyanews.tv&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://dunyanews.tv",
     },
-    # ── New outlets ───────────────────────────────────────────────────────────
-    {
-        "name": "BOL News",
-        "rss_url": "https://news.google.com/rss/search?q=site:bolnews.com&hl=en-PK&gl=PK&ceid=PK:en",
-        "website_url": "https://bolnews.com",
-    },
+    # ── Secondary outlets ─────────────────────────────────────────────────────
     {
         "name": "Pakistan Today",
         "rss_url": "https://news.google.com/rss/search?q=site:pakistantoday.com.pk&hl=en-PK&gl=PK&ceid=PK:en",
@@ -66,26 +61,31 @@ OUTLETS = [
         "rss_url": "https://news.google.com/rss/search?q=site:aaj.tv&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://aaj.tv",
     },
-    # ── Additional outlets ────────────────────────────────────────────────────
-    {
-        "name": "Hum News",
-        "rss_url": "https://news.google.com/rss/search?q=site:humnews.pk&hl=en-PK&gl=PK&ceid=PK:en",
-        "website_url": "https://humnews.pk",
-    },
     {
         "name": "Daily Times",
         "rss_url": "https://news.google.com/rss/search?q=site:dailytimes.com.pk&hl=en-PK&gl=PK&ceid=PK:en",
         "website_url": "https://dailytimes.com.pk",
     },
     {
-        "name": "The Friday Times",
-        "rss_url": "https://news.google.com/rss/search?q=site:thefridaytimes.com&hl=en-PK&gl=PK&ceid=PK:en",
-        "website_url": "https://thefridaytimes.com",
-    },
-    {
         "name": "Pakistan Observer",
         "rss_url": "https://pakobserver.net/feed/",
         "website_url": "https://pakobserver.net",
+    },
+    # ── New high-output outlets ───────────────────────────────────────────────
+    {
+        "name": "Minute Mirror",
+        "rss_url": "https://minutemirror.com.pk/feed/",
+        "website_url": "https://minutemirror.com.pk",
+    },
+    {
+        "name": "Dispatch News Desk",
+        "rss_url": "https://news.google.com/rss/search?q=site:dnd.com.pk&hl=en-PK&gl=PK&ceid=PK:en",
+        "website_url": "https://dnd.com.pk",
+    },
+    {
+        "name": "ProPakistani",
+        "rss_url": "https://propakistani.pk/feed/",
+        "website_url": "https://propakistani.pk",
     },
 ]
 

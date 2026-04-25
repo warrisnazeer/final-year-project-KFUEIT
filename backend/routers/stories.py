@@ -159,7 +159,7 @@ def list_blindspot_stories(
         db.query(Article.story_id)
         .filter(Article.story_id.isnot(None))
         .group_by(Article.story_id)
-        .having(func.count(func.distinct(Article.outlet_id)) >= 2)
+        .having(func.count(func.distinct(Article.outlet_id)) >= 3)
         .order_by(func.max(Article.scraped_at).desc())
         .all()
     )
@@ -189,7 +189,7 @@ def list_stories(
     db: Session = Depends(get_db),
 ):
     """
-    Return stories covered by ≥2 outlets, sorted by most recent article.
+    Return stories covered by ≥3 outlets, sorted by most recent article.
     Supports optional ?topic=Politics|Economy|Security|… filter.
     Does NOT include individual articles (use /{story_id} for that).
     """
@@ -197,7 +197,7 @@ def list_stories(
         db.query(Article.story_id)
         .filter(Article.story_id.isnot(None))
         .group_by(Article.story_id)
-        .having(func.count(func.distinct(Article.outlet_id)) >= 2)
+        .having(func.count(func.distinct(Article.outlet_id)) >= 3)
         .order_by(func.max(Article.scraped_at).desc())
         .all()
     )

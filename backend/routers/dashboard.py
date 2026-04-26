@@ -16,9 +16,9 @@ def get_stats(db: Session = Depends(get_db)):
         NewsOutlet.article_count > 0
     ).count()
 
-    left = db.query(Article).filter(Article.bias_label == "Left").count()
+    left = db.query(Article).filter(Article.bias_label.in_(["Left", "Lean Left", "Far Left"])).count()
     center = db.query(Article).filter(Article.bias_label == "Center").count()
-    right = db.query(Article).filter(Article.bias_label == "Right").count()
+    right = db.query(Article).filter(Article.bias_label.in_(["Right", "Lean Right", "Far Right"])).count()
 
     stories_with_multiple = (
         db.query(Article.story_id)
@@ -57,9 +57,9 @@ def get_bias_overview(db: Session = Depends(get_db)):
             .scalar()
         ) or 0.0
 
-        left = db.query(Article).filter(Article.outlet_id == o.outlet_id, Article.bias_label == "Left").count()
+        left = db.query(Article).filter(Article.outlet_id == o.outlet_id, Article.bias_label.in_(["Left", "Lean Left", "Far Left"])).count()
         center = db.query(Article).filter(Article.outlet_id == o.outlet_id, Article.bias_label == "Center").count()
-        right = db.query(Article).filter(Article.outlet_id == o.outlet_id, Article.bias_label == "Right").count()
+        right = db.query(Article).filter(Article.outlet_id == o.outlet_id, Article.bias_label.in_(["Right", "Lean Right", "Far Right"])).count()
 
         data.append({
             "outlet": o.name,

@@ -32,10 +32,13 @@ RIGHT_LABELS = {"Far Right", "Lean Right", "Right"}
 
 # ─── helpers ────────────────────────────────────────────────────────────────
 
-def _article_to_dict(a: Article) -> dict:
+def _article_to_dict(a: Article, bias_skip: bool = False) -> dict:
     score = None
-    if a.analysis and a.analysis.bias_score is not None:
+    if not bias_skip and a.analysis and a.analysis.bias_score is not None:
         score = round(a.analysis.bias_score, 4)
+    elif bias_skip:
+        score = 0.0
+
     factuality = None
     if a.outlet:
         factuality = getattr(a.outlet, "factuality", None) or "Mixed"
@@ -46,7 +49,7 @@ def _article_to_dict(a: Article) -> dict:
         "image_url":    getattr(a, "image_url", None),
         "outlet":       a.outlet.name if a.outlet else "Unknown",
         "factuality":   factuality,
-        "bias_label":   a.bias_label or "Center",
+        "bias_label":   "Center" if bias_skip else (a.bias_label or "Center"),
         "framing_tone": a.framing_tone or "Neutral",
         "bias_score":   score,
         "publish_date": a.publish_date.isoformat() if a.publish_date else None,
@@ -66,6 +69,9 @@ def _build_story_dict(story_id: int, db: Session, include_articles: bool = True)
     summary   = db.query(StorySummary).filter(StorySummary.story_id == story_id).first()
     story_row = db.query(Story).filter(Story.story_id == story_id).first()
 
+    topic_tag = getattr(story_row, "topic_tag", "General") or "General"
+    bias_skip = topic_tag in {"Sports", "Technology", "Business"}
+
     outlet_positions: dict[str, dict] = {}
     left_count = center_count = right_count = 0
     outlet_article_count: dict[str, int] = {}
@@ -74,8 +80,8 @@ def _build_story_dict(story_id: int, db: Session, include_articles: bool = True)
 
     for a in articles:
         outlet_name = a.outlet.name if a.outlet else "Unknown"
-        score = (a.analysis.bias_score if a.analysis and a.analysis.bias_score is not None else 0.0)
-        label = a.bias_label or "Center"
+        score = 0.0 if bias_skip else (a.analysis.bias_score if a.analysis and a.analysis.bias_score is not None else 0.0)
+        label = "Center" if bias_skip else (a.bias_label or "Center")
 
         if cover_image is None:
             img = getattr(a, "image_url", None)
@@ -114,10 +120,6 @@ def _build_story_dict(story_id: int, db: Session, include_articles: bool = True)
             latest_date = a.publish_date.isoformat()
             break
 
-    topic_tag = getattr(story_row, "topic_tag", "General") or "General"
-    # Topics where political bias analysis is not meaningful
-    bias_skip = topic_tag in {"Sports", "Technology", "Business"}
-
     result = {
         "story_id":       story_id,
         "story_title":    story_title,
@@ -147,7 +149,7 @@ def _build_story_dict(story_id: int, db: Session, include_articles: bool = True)
     }
 
     if include_articles:
-        result["articles"] = [_article_to_dict(a) for a in capped_articles]
+        result["articles"] = [_article_to_dict(a, bias_skip) for a in capped_articles]
 
     return result
 

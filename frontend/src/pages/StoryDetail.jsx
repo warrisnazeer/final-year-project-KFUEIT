@@ -424,7 +424,7 @@ export default function StoryDetail() {
               </div>
             )}
 
-            {activeTab !== 'Bias Comparison' && !summary?.what_happened && !summarizing && (
+            {activeTab !== 'Bias Comparison' && !summary && !summarizing && (
               <div className="bg-white border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center shadow-sm">
                 <div className="w-16 h-16 bg-sky-50 text-sky-600 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl">
                   &#10022;
@@ -445,7 +445,7 @@ export default function StoryDetail() {
               </div>
             )}
 
-            {activeTab !== 'Bias Comparison' && summary && summary.what_happened && !summarizing && (
+            {activeTab !== 'Bias Comparison' && summary && !summarizing && (
               <div className="bg-white border border-brand-border rounded-xl overflow-hidden shadow-[0_18px_40px_-28px_rgba(2,132,199,0.4)]">
                 {/* Header */}
                 <div className="flex items-center gap-2 px-5 pt-4 pb-3 border-b border-brand-border bg-gradient-to-r from-sky-50 to-cyan-50">
@@ -458,10 +458,15 @@ export default function StoryDetail() {
 
                 <div className="p-5 space-y-5">
                   {/* What Happened */}
-                  {summary.what_happened && (
+                  {summary.what_happened ? (
                     <div>
                       <p className="text-xs font-bold uppercase tracking-widest text-brand-muted mb-2">What Happened</p>
                       <p className="text-stone-800 text-sm leading-relaxed">{summary.what_happened}</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-brand-muted mb-2">Summary</p>
+                      <p className="text-stone-800 text-sm leading-relaxed">{summary.neutral_summary}</p>
                     </div>
                   )}
 
@@ -506,7 +511,7 @@ export default function StoryDetail() {
             )}
 
             {activeTab === 'Bias Comparison' && (
-              summary && summary.what_happened ? (
+              summary ? (
                 <div className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 shadow-sm">

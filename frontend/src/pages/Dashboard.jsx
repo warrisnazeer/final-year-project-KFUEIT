@@ -121,7 +121,8 @@ export default function Dashboard() {
   )
 
   const bias = stats?.bias_distribution || {}
-  const [featuredStory, ...restStories] = displayStories
+  const finalStories = isLoggedIn ? displayStories : displayStories.slice(0, 7)
+  const [featuredStory, ...restStories] = finalStories
   const maxTrend = trends[0]?.count || 1
 
   return (
@@ -393,6 +394,25 @@ export default function Dashboard() {
                     ))}
                   </div>
                 </>
+              )}
+
+              {/* Login prompt for unauthenticated users */}
+              {!isLoggedIn && displayStories.length > 7 && (
+                <div className="mt-10 bg-white border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center shadow-sm">
+                  <div className="text-4xl mb-4">🔓</div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Unlock More Stories</h3>
+                  <p className="text-slate-500 text-sm max-w-sm mx-auto mb-6">
+                    You've reached the end of the public preview. Sign in to your account to view the full news feed and track your reading history.
+                  </p>
+                  <Link
+                    to="/login"
+                    className="inline-block px-8 py-3 bg-gradient-to-r from-cyan-500 to-sky-600 text-white rounded-xl font-bold 
+                               shadow-lg shadow-sky-200 hover:shadow-sky-300 hover:scale-[1.02] active:scale-[0.98] 
+                               transition-all cursor-pointer"
+                  >
+                    Sign In Now
+                  </Link>
+                </div>
               )}
             </div>
           </div>

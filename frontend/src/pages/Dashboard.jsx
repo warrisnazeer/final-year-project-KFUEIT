@@ -253,20 +253,32 @@ export default function Dashboard() {
                 </div>
 
                 {/* Reading Diversity Score */}
-                {divScore && (
+                {isLoggedIn ? (
+                  divScore && (
+                    <div className="pb-5 border-b border-slate-200/70">
+                      <p className="text-xs font-bold text-slate-500 mb-3">Your Reading Diversity</p>
+                      <div className="flex rounded-full overflow-hidden h-2.5 mb-2 shadow-inner bg-slate-100">
+                        {divScore.lPct > 0 && <div style={{width:`${divScore.lPct}%`}} className="bg-blue-500" />}
+                        {divScore.cPct > 0 && <div style={{width:`${divScore.cPct}%`}} className="bg-teal-400" />}
+                        {divScore.rPct > 0 && <div style={{width:`${divScore.rPct}%`}} className="bg-red-500" />}
+                      </div>
+                      <div className="flex justify-between text-[10px] font-bold">
+                        <span className="text-blue-600">{divScore.lPct}% L</span>
+                        <span className="text-teal-600">{divScore.cPct}% C</span>
+                        <span className="text-red-600">{divScore.rPct}% R</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1 font-medium">{divScore.n} stories read</p>
+                    </div>
+                  )
+                ) : (
                   <div className="pb-5 border-b border-slate-200/70">
-                    <p className="text-xs font-bold text-slate-500 mb-3">Your Reading Diversity</p>
-                    <div className="flex rounded-full overflow-hidden h-2.5 mb-2 shadow-inner bg-slate-100">
-                      {divScore.lPct > 0 && <div style={{width:`${divScore.lPct}%`}} className="bg-blue-500" />}
-                      {divScore.cPct > 0 && <div style={{width:`${divScore.cPct}%`}} className="bg-teal-400" />}
-                      {divScore.rPct > 0 && <div style={{width:`${divScore.rPct}%`}} className="bg-red-500" />}
+                    <p className="text-xs font-bold text-slate-500 mb-3 flex items-center gap-1.5">
+                      <span className="text-sm">🔒</span> Your Reading Diversity
+                    </p>
+                    <div className="bg-slate-50 border border-slate-200 border-dashed rounded-xl p-4 text-center">
+                      <p className="text-[10px] text-slate-500 font-medium mb-2">Track your reading habits and political bias diet permanently.</p>
+                      <Link to="/login" className="text-[10px] font-bold text-sky-600 hover:text-sky-700 bg-sky-50 px-3 py-1 rounded-lg">Sign in to unlock</Link>
                     </div>
-                    <div className="flex justify-between text-[10px] font-bold">
-                      <span className="text-blue-600">{divScore.lPct}% L</span>
-                      <span className="text-teal-600">{divScore.cPct}% C</span>
-                      <span className="text-red-600">{divScore.rPct}% R</span>
-                    </div>
-                    <p className="text-[10px] text-slate-400 mt-1 font-medium">{divScore.n} stories read</p>
                   </div>
                 )}
 
@@ -296,22 +308,34 @@ export default function Dashboard() {
                 )}
 
                 {/* Saved Stories (logged in only) */}
-                {isLoggedIn && savedStories.length > 0 && (
+                {isLoggedIn ? (
+                  savedStories.length > 0 && (
+                    <div className="pb-5 border-b border-slate-200/70">
+                      <p className="text-xs font-bold text-slate-500 mb-3">★ Saved Stories</p>
+                      <ol className="space-y-3">
+                        {savedStories.slice(0, 5).map(s => (
+                          <li key={s.story_id} className="group cursor-pointer">
+                            <Link
+                              to={`/stories/${s.story_id}`}
+                              className="text-xs font-medium text-slate-600 group-hover:text-amber-600 leading-snug line-clamp-2 transition-colors"
+                            >
+                              {s.story_title}
+                            </Link>
+                            <span className="text-[9px] text-slate-400">{s.outlet_count} sources</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )
+                ) : (
                   <div className="pb-5 border-b border-slate-200/70">
-                    <p className="text-xs font-bold text-slate-500 mb-3">★ Saved Stories</p>
-                    <ol className="space-y-3">
-                      {savedStories.slice(0, 5).map(s => (
-                        <li key={s.story_id} className="group cursor-pointer">
-                          <Link
-                            to={`/stories/${s.story_id}`}
-                            className="text-xs font-medium text-slate-600 group-hover:text-amber-600 leading-snug line-clamp-2 transition-colors"
-                          >
-                            {s.story_title}
-                          </Link>
-                          <span className="text-[9px] text-slate-400">{s.outlet_count} sources</span>
-                        </li>
-                      ))}
-                    </ol>
+                    <p className="text-xs font-bold text-slate-500 mb-3 flex items-center gap-1.5">
+                      <span className="text-sm">🔒</span> Saved Stories
+                    </p>
+                    <div className="bg-slate-50 border border-slate-200 border-dashed rounded-xl p-4 text-center">
+                      <p className="text-[10px] text-slate-500 font-medium mb-2">Build a library of stories to revisit and track over time.</p>
+                      <Link to="/login" className="text-[10px] font-bold text-sky-600 hover:text-sky-700 bg-sky-50 px-3 py-1 rounded-lg">Sign in to unlock</Link>
+                    </div>
                   </div>
                 )}
 

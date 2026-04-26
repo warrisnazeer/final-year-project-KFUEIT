@@ -255,7 +255,7 @@ export default function StoryDetail() {
           </Link>
           <div className="flex items-center gap-2">
             <span className="text-brand-muted text-xs hidden sm:block">{timeAgo(story.latest_date)}</span>
-            {isLoggedIn && (
+            {isLoggedIn ? (
               <button
                 onClick={handleBookmark}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border ${
@@ -266,6 +266,14 @@ export default function StoryDetail() {
               >
                 {bookmarked ? '★ Saved' : '☆ Save'}
               </button>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition-colors border bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100"
+                title="Sign in to save stories"
+              >
+                🔒 Save
+              </Link>
             )}
             <button
               onClick={handleShare}

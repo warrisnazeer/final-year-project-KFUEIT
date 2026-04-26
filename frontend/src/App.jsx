@@ -26,11 +26,11 @@ export default function App() {
           <main className="relative">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-cyan-100/40 via-sky-100/30 to-transparent" />
             <Routes>
-              <Route path="/"              element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/"              element={<Dashboard />} />
               <Route path="/outlets"       element={<Outlets />} />
               <Route path="/articles"      element={<Articles />} />
-              <Route path="/stories"       element={<ProtectedRoute><Stories /></ProtectedRoute>} />
-              <Route path="/stories/:id"   element={<ProtectedRoute><StoryDetail /></ProtectedRoute>} />
+              <Route path="/stories"       element={<Stories />} />
+              <Route path="/stories/:id"   element={<StoryDetail />} />
               <Route path="/history"       element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/blindspot"      element={<Blindspot />} />
               <Route path="/how-it-works"  element={<HowItWorks />} />

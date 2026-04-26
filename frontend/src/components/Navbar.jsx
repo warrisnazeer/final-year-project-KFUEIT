@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const navLinks = [
   { to: '/', label: 'Stories' },
@@ -12,6 +13,7 @@ const navLinks = [
 export default function Navbar() {
   const { pathname } = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { user, logout, isLoggedIn } = useAuth()
 
   const linkClass = (to, label) => {
     const isActive = to === '/' ? pathname === '/' : pathname.startsWith(to)
@@ -33,7 +35,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-13">
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0">
-          <img src="/logo.png" alt="News Narrative Logo" className="h-14 md:h-16 scale-[1.7] md:scale-[2] origin-left transform object-contain ml-2" />
+          <img src="/logo.png" alt="News Narrative Logo" className="h-16 md:h-20 scale-[2.5] md:scale-[3.5] origin-left transform object-contain ml-4" />
         </Link>
 
         {/* Desktop nav links */}
@@ -49,8 +51,31 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Right: live + hamburger */}
+        {/* Right: user + live + hamburger */}
         <div className="flex items-center gap-3">
+          {/* User area */}
+          {isLoggedIn ? (
+            <div className="hidden sm:flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500 to-sky-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                {user?.username?.charAt(0).toUpperCase()}
+              </div>
+              <span className="text-xs font-medium text-slate-700">{user?.username}</span>
+              <button
+                onClick={logout}
+                className="text-[10px] text-slate-400 hover:text-red-500 transition-colors cursor-pointer font-medium ml-1"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-sky-600 text-white rounded-lg text-xs font-semibold shadow-sm hover:shadow-md transition-all"
+            >
+              Sign in
+            </Link>
+          )}
+
           <div className="flex items-center gap-1.5 text-xs text-slate-500 shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="hidden sm:block">Live</span>
@@ -81,9 +106,33 @@ export default function Navbar() {
               {label}
             </Link>
           ))}
+          {/* Mobile login/logout */}
+          {isLoggedIn ? (
+            <div className="flex items-center justify-between px-3 py-2 border-t border-slate-100 mt-2 pt-3">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-sky-600 flex items-center justify-center text-white text-[10px] font-bold">
+                  {user?.username?.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-xs font-medium text-slate-700">{user?.username}</span>
+              </div>
+              <button
+                onClick={() => { logout(); setMobileOpen(false) }}
+                className="text-xs text-red-500 hover:text-red-600 font-medium cursor-pointer"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setMobileOpen(false)}
+              className="block px-3 py-2 text-sm font-medium text-sky-600 hover:bg-sky-50 rounded-lg border-t border-slate-100 mt-2 pt-3"
+            >
+              Sign in
+            </Link>
+          )}
         </div>
       )}
     </nav>
   )
 }
-

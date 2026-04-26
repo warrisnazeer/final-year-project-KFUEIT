@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from database import engine, Base, SessionLocal
-from models import NewsOutlet, Article, AnalysisResult, Story, StorySummary
+from models import NewsOutlet, Article, AnalysisResult, Story, StorySummary, User
 from scrapers.rss_scraper import scrape_all_outlets, OUTLETS
 from services.bias_classifier import classify_article
 from services.framing_analyzer import analyze_framing
@@ -19,6 +19,8 @@ from services.story_grouper import group_articles
 from services.topic_tagger import tag_story_topic, compute_blindspot
 from routers import articles, outlets, dashboard
 from routers import stories
+from routers import auth as auth_router
+from routers import user as user_router
 from services.story_summarizer import generate_story_summary
 
 logging.basicConfig(
@@ -85,6 +87,8 @@ app.include_router(articles.router, prefix="/api/articles", tags=["Articles"])
 app.include_router(outlets.router, prefix="/api/outlets", tags=["Outlets"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(stories.router, prefix="/api/stories", tags=["Stories"])
+app.include_router(auth_router.router, prefix="/api/auth", tags=["Auth"])
+app.include_router(user_router.router, prefix="/api/user", tags=["User"])
 
 
 # ── Outlet seeding ──────────────────────────────────────────────────────────
@@ -128,6 +132,26 @@ def seed_outlets():
                     existing.factuality = OUTLET_FACTUALITY.get(o["name"], "Mixed")
         db.commit()
         logger.info("Outlets seeded.")
+    finally:
+        db.close()
+
+
+def seed_user():
+    """Create the default user account if it doesn't exist."""
+    from passlib.hash import bcrypt
+    db = SessionLocal()
+    try:
+        existing = db.query(User).filter(User.username == "amjad").first()
+        if not existing:
+            db.add(User(
+                username="amjad",
+                email="amjad@newsnarrative.com",
+                password_hash=bcrypt.hash("newsnarrative2026"),
+            ))
+            db.commit()
+            logger.info("Default user 'amjad' created.")
+        else:
+            logger.info("User 'amjad' already exists.")
     finally:
         db.close()
 
@@ -297,6 +321,7 @@ scheduler = BackgroundScheduler(daemon=True)
 def startup():
     import threading
     seed_outlets()
+    seed_user()
     # Run the initial pipeline in a background thread so it doesn't block server startup
     t = threading.Thread(target=run_pipeline, daemon=True)
     t.start()

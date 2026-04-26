@@ -1,8 +1,9 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { getDashboardStats, getStoryFeed, triggerScrape, getTopicTrends } from '../api/client'
+import { getDashboardStats, getStoryFeed, triggerScrape, getTopicTrends, getDiversity, getBookmarks } from '../api/client'
 import StoryFeedCard from '../components/StoryFeedCard'
 import SkeletonCard from '../components/SkeletonCard'
+import { useAuth } from '../context/AuthContext'
 
 const TOPICS = ['All', 'Politics', 'Economy', 'Security', 'International', 'Sports', 'Business', 'Ceasefire']
 
@@ -16,6 +17,7 @@ function readDiversity() {
 }
 
 export default function Dashboard() {
+  const { isLoggedIn } = useAuth()
   const [stories, setStories]     = useState([])
   const [stats, setStats]         = useState(null)
   const [trends, setTrends]       = useState([])
@@ -25,6 +27,7 @@ export default function Dashboard() {
   const [activeTopic, setTopic]   = useState('All')
   const [search, setSearch]       = useState('')
   const [diversity, setDiversity] = useState(null)
+  const [savedStories, setSavedStories] = useState([])
 
   const loadData = async (topic = activeTopic) => {
     try {
@@ -45,7 +48,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadData()
-    setDiversity(readDiversity())
+    // Load diversity from API if logged in, otherwise localStorage
+    if (isLoggedIn) {
+      getDiversity().then(r => {
+        const d = r.data
+        setDiversity({ L: d.left, C: d.center, R: d.right, n: d.total_read })
+      }).catch(() => setDiversity(readDiversity()))
+      getBookmarks().then(r => setSavedStories(r.data)).catch(() => {})
+    } else {
+      setDiversity(readDiversity())
+    }
   }, [])
 
   const handleScrape = async () => {
@@ -280,6 +292,26 @@ export default function Dashboard() {
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Saved Stories (logged in only) */}
+                {isLoggedIn && savedStories.length > 0 && (
+                  <div className="pb-5 border-b border-slate-200/70">
+                    <p className="text-xs font-bold text-slate-500 mb-3">★ Saved Stories</p>
+                    <ol className="space-y-3">
+                      {savedStories.slice(0, 5).map(s => (
+                        <li key={s.story_id} className="group cursor-pointer">
+                          <Link
+                            to={`/stories/${s.story_id}`}
+                            className="text-xs font-medium text-slate-600 group-hover:text-amber-600 leading-snug line-clamp-2 transition-colors"
+                          >
+                            {s.story_title}
+                          </Link>
+                          <span className="text-[9px] text-slate-400">{s.outlet_count} sources</span>
+                        </li>
+                      ))}
+                    </ol>
                   </div>
                 )}
 

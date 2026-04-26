@@ -94,3 +94,47 @@ class StorySummary(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     story = relationship("Story", backref="summary")
+
+
+class User(Base):
+    """Single user account for personal tracking."""
+    __tablename__ = "users"
+
+    user_id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, nullable=False)
+    email = Column(String(200), nullable=True)
+    password_hash = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    reading_history = relationship("ReadingHistory", back_populates="user")
+    bookmarks = relationship("Bookmark", back_populates="user")
+
+
+class ReadingHistory(Base):
+    """Tracks which stories the user has read."""
+    __tablename__ = "reading_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"))
+    story_id = Column(Integer, ForeignKey("stories.story_id"))
+    read_at = Column(DateTime, default=datetime.utcnow)
+    # Snapshot of bias distribution at time of reading
+    left_count = Column(Integer, default=0)
+    center_count = Column(Integer, default=0)
+    right_count = Column(Integer, default=0)
+
+    user = relationship("User", back_populates="reading_history")
+    story = relationship("Story")
+
+
+class Bookmark(Base):
+    """User's saved/bookmarked stories."""
+    __tablename__ = "bookmarks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"))
+    story_id = Column(Integer, ForeignKey("stories.story_id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="bookmarks")
+    story = relationship("Story")

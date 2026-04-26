@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { getStoryDetail, summarizeStory, expandStory, runDeepBias } from '../api/client'
+import { getStoryDetail, summarizeStory, expandStory, runDeepBias, markStoryRead, toggleBookmark, getBookmarkIds } from '../api/client'
 import { BiasBadge, ToneBadge, FactualityBadge, BIAS_5 } from '../components/Badges'
 import CoverageBar from '../components/CoverageBar'
+import { useAuth } from '../context/AuthContext'
 
 const LEFT_LABELS  = new Set(['Far Left',  'Lean Left',  'Left'])
 const RIGHT_LABELS = new Set(['Far Right', 'Lean Right', 'Right'])
@@ -88,6 +89,7 @@ function ArticleCard({ article }) {
 
 export default function StoryDetail() {
   const { id } = useParams()
+  const { isLoggedIn } = useAuth()
   const [story, setStory]             = useState(null)
   const [loading, setLoading]         = useState(true)
   const [summarizing, setSummarizing] = useState(false)
@@ -96,6 +98,7 @@ export default function StoryDetail() {
   const [deepBiasing, setDeepBiasing] = useState(false)
   const [deepBiasErr, setDeepBiasErr] = useState(null)
   const [activeTab, setActiveTab]     = useState('All')
+  const [bookmarked, setBookmarked]   = useState(false)
 
   const [copied, setCopied] = useState(false)
 
@@ -106,12 +109,27 @@ export default function StoryDetail() {
     })
   }
 
+  const handleBookmark = async () => {
+    if (!isLoggedIn) return
+    try {
+      const res = await toggleBookmark(id)
+      setBookmarked(res.data.bookmarked)
+    } catch {}
+  }
+
   const loadStory = async () => {
     try {
       const res = await getStoryDetail(id)
       setStory(res.data)
       trackDiversity(res.data)
-      // Auto-summarize disabled to save tokens. User must click button.
+      // Auto-track reading if logged in
+      if (isLoggedIn) {
+        markStoryRead(id).catch(() => {})
+        // Check bookmark status
+        getBookmarkIds().then(r => {
+          setBookmarked(r.data.includes(parseInt(id)))
+        }).catch(() => {})
+      }
     } catch {
       setStory(null)
     } finally {
@@ -235,8 +253,20 @@ export default function StoryDetail() {
           <Link to="/" className="text-brand-muted hover:text-slate-900 text-sm transition-colors">
             &larr; Back
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <span className="text-brand-muted text-xs hidden sm:block">{timeAgo(story.latest_date)}</span>
+            {isLoggedIn && (
+              <button
+                onClick={handleBookmark}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border ${
+                  bookmarked
+                    ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100'
+                    : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+                }`}
+              >
+                {bookmarked ? '★ Saved' : '☆ Save'}
+              </button>
+            )}
             <button
               onClick={handleShare}
               className="flex items-center gap-1.5 px-3 py-1 bg-sky-50 hover:bg-sky-100 border border-sky-200

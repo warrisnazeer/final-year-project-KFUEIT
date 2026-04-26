@@ -44,14 +44,16 @@ function ArticleCard({ article }) {
   const score = article.bias_score ?? null
   return (
     <div className={`rounded-xl border p-4 ${c.bg} ${c.border} transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md`}>
-      <div className="flex items-start justify-between gap-3 mb-2">
-        <span className={`text-xs font-bold uppercase tracking-wider ${c.text} shrink-0`}>
-          {article.outlet}
-        </span>
-        {article.publish_date && (
-          <span className="text-[10px] text-brand-muted shrink-0 ml-1">{timeAgo(article.publish_date)}</span>
-        )}
-        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
+        <div className="flex items-center gap-2">
+          <span className={`text-xs font-bold uppercase tracking-wider ${c.text} shrink-0`}>
+            {article.outlet}
+          </span>
+          {article.publish_date && (
+            <span className="text-[10px] text-brand-muted shrink-0 ml-1">{timeAgo(article.publish_date)}</span>
+          )}
+        </div>
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mt-1 sm:mt-0">
           <BiasBadge label={article.bias_label} score={score} short />
           <ToneBadge tone={article.framing_tone} />
           {article.factuality && <FactualityBadge rating={article.factuality} />}

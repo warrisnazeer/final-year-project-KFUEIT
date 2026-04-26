@@ -35,7 +35,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-13">
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0">
-          <img src="/logo.png" alt="News Narrative Logo" className="h-16 md:h-20 scale-[2.5] md:scale-[3.5] origin-left transform object-contain ml-4" />
+          <img src="/logo.png" alt="News Narrative Logo" className="h-10 md:h-16 scale-[2] md:scale-[2.5] origin-left transform object-contain ml-3 md:ml-4" />
         </Link>
 
         {/* Desktop nav links */}
@@ -55,17 +55,17 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {/* User area */}
           {isLoggedIn ? (
-            <div className="flex items-center gap-3 relative ml-4">
-              <Link to="/history" className="text-xs font-bold text-slate-500 hover:text-sky-600 transition-colors mr-2">
+            <div className="flex items-center gap-3 relative ml-2 md:ml-4">
+              <Link to="/history" className="hidden md:block text-xs font-bold text-slate-500 hover:text-sky-600 transition-colors mr-2">
                 My History
               </Link>
               <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-500 to-cyan-400 flex items-center justify-center text-white font-black text-sm shadow-sm cursor-pointer" title={user?.username}>
                 {user?.username?.[0]?.toUpperCase() || 'U'}
               </div>
-              <span className="text-xs font-medium text-slate-700">{user?.username}</span>
+              <span className="hidden md:block text-xs font-medium text-slate-700">{user?.username}</span>
               <button
                 onClick={logout}
-                className="text-[10px] text-slate-400 hover:text-red-500 transition-colors cursor-pointer font-medium ml-1"
+                className="hidden md:block text-[10px] text-slate-400 hover:text-red-500 transition-colors cursor-pointer font-medium ml-1"
               >
                 Logout
               </button>
@@ -111,8 +111,16 @@ export default function Navbar() {
           ))}
           {/* Mobile login/logout */}
           {isLoggedIn ? (
-            <div className="flex items-center justify-between px-3 py-2 border-t border-slate-100 mt-2 pt-3">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col border-t border-slate-100 mt-2 pt-3">
+              <Link
+                to="/history"
+                onClick={() => setMobileOpen(false)}
+                className="block px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg mb-2"
+              >
+                My History
+              </Link>
+              <div className="flex items-center justify-between px-3 py-2">
+                <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-sky-600 flex items-center justify-center text-white text-[10px] font-bold">
                   {user?.username?.charAt(0).toUpperCase()}
                 </div>
@@ -124,6 +132,7 @@ export default function Navbar() {
               >
                 Logout
               </button>
+              </div>
             </div>
           ) : (
             <Link

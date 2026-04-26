@@ -87,6 +87,7 @@ If outlets all seem to frame it similarly (rare), note that honestly in the fram
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.4,
         "max_tokens": 2048,
+        "response_format": {"type": "json_object"}
     }
 
     try:
@@ -196,6 +197,7 @@ No markdown, no other text."""
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.2,
         "max_tokens": 1024,
+        "response_format": {"type": "json_object"}
     }
 
     try:
@@ -213,7 +215,11 @@ No markdown, no other text."""
                     text = stripped
                     break
 
-        return json.loads(text)
+        # In case the model wrapped it in an outer object like {"scores": {"1":0.5}}
+        parsed = json.loads(text)
+        if "scores" in parsed and isinstance(parsed["scores"], dict):
+            return parsed["scores"]
+        return parsed
     except Exception as e:
         logger.warning(f"Deep Bias scoring failed: {e}")
         return {}

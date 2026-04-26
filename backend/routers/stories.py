@@ -449,7 +449,7 @@ def run_deep_bias(story_id: int, db: Session = Depends(get_db)):
                 continue
                 
             outlet_name = a.outlet.name if a.outlet else "Unknown"
-            prior_score = OUTLET_PRIORS.get(outlet_name, {"score": 0.0})["score"]
+            prior_score = OUTLET_PRIORS.get(outlet_name, 0.0)
             
             # New stealth formula: 80% Narrative Engine, 20% Priors
             new_score = (ai_score * 0.8) + (prior_score * 0.2)
@@ -458,9 +458,9 @@ def run_deep_bias(story_id: int, db: Session = Depends(get_db)):
                 a.analysis.bias_score = new_score
             else:
                 a.analysis = AnalysisResult(
-                    article_id=a.id,
+                    article_id=a.article_id,
                     bias_score=new_score,
-                    framing_tone="Neutral"
+                    framing_type="Neutral"
                 )
                 db.add(a.analysis)
                 

@@ -25,6 +25,15 @@ _raw_key = os.getenv("HUGGINGFACE_API_KEY", "")
 HF_API_KEY = _raw_key if (_raw_key.startswith("hf_") and len(_raw_key) > 15) else ""
 ZS_API_URL = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-mnli"
 
+# ── Bias Labels & Thresholds ──────────────────────────────────────────────
+BIAS_CATEGORIES = {
+    "Far Left":   [-1.0, -0.45],
+    "Lean Left":  [-0.45, -0.15],
+    "Center":     [-0.15, 0.15],
+    "Lean Right": [0.15, 0.45],
+    "Far Right":  [0.45, 1.0],
+}
+
 # ── Outlet priors based on known Pakistani media landscape ──────────────────
 # Sources: journalism studies, RSF index, local media analysis
 # Scale: -1.0 (Far Left/Liberal) to +1.0 (Far Right/Pro-establishment)
@@ -176,108 +185,10 @@ def _detect_non_political_topic(title: str) -> str | None:
     return None
 
 
-# ── Groq LLM bias scoring ────────────────────────────────────────────────────
-
-_groq_client = None
-
-def _get_groq_client():
-    """Lazy-init Groq client using the same API key as the summarizer."""
-    global _groq_client
-    if _groq_client is not None:
-        return _groq_client
-    groq_key = os.getenv("GROQ_API_KEY", "")
-    if not groq_key:
-        return None
-    try:
-        from groq import Groq
-        _groq_client = Groq(api_key=groq_key)
-        return _groq_client
-    except Exception as e:
-        logger.warning(f"Groq client init failed: {e}")
-        return None
-
-
-def _groq_bias_score(title: str, content: str, outlet_name: str) -> float | None:
-    """
-    Use Groq (Llama 3.3 70B) to analyze political bias of a Pakistani news article.
-    
-    Returns a float in [-1.0, +1.0] where:
-      -1.0 = strongly left/liberal/pro-civilian
-      +1.0 = strongly right/pro-establishment/security-state
-       0.0 = neutral/balanced
-    
-    Returns None if Groq is unavailable or rate-limited.
-    """
-    client = _get_groq_client()
-    if not client:
-        return None
-
-    snippet = (content or "")[:500].replace("\n", " ").strip()
-
-    prompt = f"""You are an expert Pakistani media analyst. Analyze the political bias of this news article from {outlet_name}.
-
-Title: {title}
-Content excerpt: {snippet}
-
-In Pakistan's media landscape:
-- LEFT/LIBERAL = pro-civilian government, critical of military establishment, emphasizes accountability, human rights, press freedom, opposition voices, democratic values
-- RIGHT/CONSERVATIVE = pro-establishment, pro-military, emphasizes national security, law and order, state sovereignty, patriotic framing, anti-dissent
-
-Rate the political bias of this article on a scale from -1.0 to +1.0:
-  -1.0 = strongly left/liberal
-  -0.5 = moderately left
-   0.0 = neutral/balanced
-  +0.5 = moderately right/pro-establishment
-  +1.0 = strongly right/pro-establishment
-
-Respond with ONLY a single JSON object, no other text:
-{{"score": <number>, "reasoning": "<one sentence>"}}"""
-
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.2,
-            max_tokens=100,
-        )
-        text = response.choices[0].message.content.strip()
-
-        # Strip markdown code blocks if present
-        if "```" in text:
-            parts = text.split("```")
-            for part in parts:
-                stripped = part.strip()
-                if stripped.startswith("json"):
-                    stripped = stripped[4:].strip()
-                if stripped.startswith("{"):
-                    text = stripped
-                    break
-
-        result = json.loads(text)
-        score = float(result.get("score", 0.0))
-        score = max(-1.0, min(1.0, score))  # clamp
-        reasoning = result.get("reasoning", "")
-        logger.info(f"Groq bias: {score:+.2f} for '{title[:50]}' ({reasoning[:60]})")
-        return score
-
-    except Exception as e:
-        err_str = str(e).lower()
-        if "rate_limit" in err_str or "429" in err_str or "quota" in err_str:
-            logger.warning("Groq rate limit — skipping LLM bias signal")
-        else:
-            logger.warning(f"Groq bias analysis failed: {e}")
-        return None
-
-
 def classify_article(title: str, content: str, outlet_name: str) -> dict:
     """
     Main classification function.
     Returns: {bias_score, bias_label, confidence_score, zero_shot_scores}
-
-    Hybrid 4-signal approach:
-      Score = 0.40 × Groq_LLM  +  0.25 × HuggingFace_ZS  +  0.20 × keywords  +  0.15 × outlet_prior
-    
-    Falls back gracefully when Groq or HuggingFace are unavailable.
 
     Articles detected as Sports, Technology, or Business are assigned
     neutral Center scores because political bias analysis is not meaningful.
@@ -297,34 +208,19 @@ def classify_article(title: str, content: str, outlet_name: str) -> dict:
     prior = OUTLET_PRIORS.get(outlet_name, 0.0)
     kw_score = _keyword_score(text)
     zs_raw = None
-    groq_score = None
 
-    # Signal 1: Groq LLM (best for Pakistani political context)
-    groq_score = _groq_bias_score(title, content, outlet_name)
-
-    # Signal 2: HuggingFace zero-shot NLP
     if HF_API_KEY:
         zs_raw = _zero_shot_api(text)
 
-    # ── Compute weighted final score ──────────────────────────────────────
-    if groq_score is not None and zs_raw:
-        # All 4 signals available: 40% Groq + 25% HF + 20% kw + 15% prior
+    if zs_raw:
+        # Full hybrid: 60% NLP + 30% keywords + 10% prior
         zs_score = zs_raw.get("right", 0.33) - zs_raw.get("left", 0.33)
-        final_score = (0.40 * groq_score) + (0.25 * zs_score) + (0.20 * kw_score) + (0.15 * prior)
-        confidence = 0.90
-    elif groq_score is not None:
-        # Groq + keywords + prior (no HuggingFace): 55% Groq + 25% kw + 20% prior
-        final_score = (0.55 * groq_score) + (0.25 * kw_score) + (0.20 * prior)
-        confidence = 0.80
-    elif zs_raw:
-        # HuggingFace + keywords + prior (no Groq): 50% HF + 30% kw + 20% prior
-        zs_score = zs_raw.get("right", 0.33) - zs_raw.get("left", 0.33)
-        final_score = (0.50 * zs_score) + (0.30 * kw_score) + (0.20 * prior)
+        final_score = (0.60 * zs_score) + (0.30 * kw_score) + (0.10 * prior)
         confidence = max(zs_raw.get("left", 0), zs_raw.get("center", 0), zs_raw.get("right", 0))
     else:
-        # Keywords + prior only (no AI): 70% kw + 30% prior
+        # Keyword-only fallback: 70% keywords + 30% prior
         final_score = (0.70 * kw_score) + (0.30 * prior)
-        confidence = 0.55
+        confidence = 0.55  # lower confidence without AI model
 
     # Clamp to [-1, 1]
     final_score = max(-1.0, min(1.0, final_score))
@@ -347,5 +243,4 @@ def classify_article(title: str, content: str, outlet_name: str) -> dict:
         "confidence_score": round(confidence, 4),
         "zero_shot_scores": json.dumps(zs_raw) if zs_raw else None,
     }
-
 

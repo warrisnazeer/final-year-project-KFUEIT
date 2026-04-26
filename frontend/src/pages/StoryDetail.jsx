@@ -253,6 +253,7 @@ export default function StoryDetail() {
   const farRightPct  = 100 - farLeftPct - leanLeftPct - centerPct - leanRightPct
 
   const summary = story.summary
+  const isNonPolitical = ['Sports', 'Tech', 'Business'].includes(story.topic_tag)
   const bulletFacts = summary?.neutral_summary
     ? summary.neutral_summary.split('|').map(f => f.trim()).filter(Boolean)
     : []

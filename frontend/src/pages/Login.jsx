@@ -30,9 +30,7 @@ export default function Login() {
 
         {/* Logo area */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-sky-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-sky-500/20">
-            <span className="text-white text-2xl font-black">N</span>
-          </div>
+          <img src="/logo.png" alt="News Narrative Logo" className="h-20 scale-[2.5] mx-auto mb-4 object-contain" />
           <h1 className="text-2xl font-bold text-slate-900">Welcome back</h1>
           <p className="text-sm text-slate-500 mt-1">Sign in to your News Narrative account</p>
         </div>

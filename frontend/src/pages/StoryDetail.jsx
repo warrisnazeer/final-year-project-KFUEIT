@@ -47,6 +47,9 @@ function ArticleCard({ article }) {
         <span className={`text-xs font-bold uppercase tracking-wider ${c.text} shrink-0`}>
           {article.outlet}
         </span>
+        {article.publish_date && (
+          <span className="text-[10px] text-brand-muted shrink-0 ml-1">{timeAgo(article.publish_date)}</span>
+        )}
         <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
           <BiasBadge label={article.bias_label} score={score} short />
           <ToneBadge tone={article.framing_tone} />
@@ -123,6 +126,12 @@ export default function StoryDetail() {
       const res = await runDeepBias(id)
       setStory(res.data)
       trackDiversity(res.data)
+      // Auto-regenerate summary so framing text matches new scores
+      try {
+        await summarizeStory(id)
+        const updated = await getStoryDetail(id)
+        setStory(updated.data)
+      } catch {}
     } catch (err) {
       setDeepBiasErr("Narrative Engine failed or limit reached.")
       console.error(err)

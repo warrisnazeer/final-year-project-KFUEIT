@@ -42,6 +42,9 @@ def migrate_db():
         ("news_outlets",   "factuality",      "TEXT DEFAULT 'Mixed'"),
         ("stories",        "topic_tag",       "TEXT DEFAULT 'General'"),
         ("stories",        "blindspot_side",  "TEXT"),
+        ("stories",        "story_title",     "TEXT"),
+        ("stories",        "has_summary",     "INTEGER DEFAULT 0"),
+        ("stories",        "summary_json",    "TEXT"),
         ("articles",       "image_url",       "TEXT"),
         ("story_summaries","what_happened",   "TEXT"),
         ("story_summaries","key_actors",      "TEXT"),
@@ -131,9 +134,12 @@ def seed_outlets():
 
 # ── Core pipeline ────────────────────────────────────────────────────────────
 def _group_recent_stories(db):
-    """Re-group articles published in the last 48 hours into stories."""
+    """Group recently scraped articles that don't have a story yet."""
     cutoff = datetime.utcnow() - timedelta(hours=48)
-    recent = db.query(Article).filter(Article.scraped_at >= cutoff).all()
+    recent = db.query(Article).filter(
+        Article.scraped_at >= cutoff,
+        Article.story_id.is_(None),
+    ).all()
 
     if len(recent) < 2:
         return
@@ -223,7 +229,7 @@ def run_pipeline():
     db = SessionLocal()
 
     try:
-        raw_articles = scrape_all_outlets()
+        raw_articles = scrape_all_outlets(fetch_full=True)
         new_count = 0
 
         for art in raw_articles:

@@ -26,11 +26,15 @@ class Story(Base):
 
     story_id = Column(Integer, primary_key=True, index=True)
     description = Column(Text)
+    story_title = Column(String(500), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     # Topic classification: Politics, Economy, Security, International, Sports, Business, Ceasefire
     topic_tag = Column(String(50), default="General")
     # Blindspot: which audience is missing this story ("Left" | "Right" | None)
     blindspot_side = Column(String(20), nullable=True)
+    # Auto-summarize tracking
+    has_summary = Column(Integer, default=0)  # 0/1 flag for SQLite compat
+    summary_json = Column(Text, nullable=True)
 
     articles = relationship("Article", back_populates="story")
 

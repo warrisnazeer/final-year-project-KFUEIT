@@ -218,8 +218,11 @@ def classify_article(title: str, content: str, outlet_name: str) -> dict:
         final_score = (0.60 * zs_score) + (0.30 * kw_score) + (0.10 * prior)
         confidence = max(zs_raw.get("left", 0), zs_raw.get("center", 0), zs_raw.get("right", 0))
     else:
-        # Keyword-only fallback: 70% keywords + 30% prior
-        final_score = (0.70 * kw_score) + (0.30 * prior)
+        # Keyword-only fallback: if no keywords matched, lean more on outlet prior
+        if kw_score == 0.0:
+            final_score = 0.50 * prior  # prior-only: outlet identity matters
+        else:
+            final_score = (0.70 * kw_score) + (0.30 * prior)
         confidence = 0.55  # lower confidence without AI model
 
     # Clamp to [-1, 1]

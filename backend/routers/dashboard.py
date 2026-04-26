@@ -16,9 +16,9 @@ def get_stats(db: Session = Depends(get_db)):
         NewsOutlet.article_count > 0
     ).count()
 
-    left = db.query(Article).filter(Article.bias_label == "Left").count()
+    left = db.query(Article).filter(Article.bias_label.in_(["Far Left", "Lean Left"])).count()
     center = db.query(Article).filter(Article.bias_label == "Center").count()
-    right = db.query(Article).filter(Article.bias_label == "Right").count()
+    right = db.query(Article).filter(Article.bias_label.in_(["Far Right", "Lean Right"])).count()
 
     stories_with_multiple = (
         db.query(Article.story_id)

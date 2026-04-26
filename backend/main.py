@@ -139,7 +139,12 @@ def _group_recent_stories(db):
         return
 
     article_dicts = [
-        {"article_id": a.article_id, "title": a.title, "content": a.content or ""}
+        {
+            "article_id": a.article_id,
+            "title": a.title,
+            "content": a.content or "",
+            "publish_date": a.publish_date,
+        }
         for a in recent
     ]
 

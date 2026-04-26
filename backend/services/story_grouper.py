@@ -62,9 +62,13 @@ def group_articles(articles: list) -> dict:
             if len(group) >= MAX_CLUSTER_SIZE:
                 continue
 
-            # Average linkage: new article must be similar on average to members
-            avg_sim = sum(sim_matrix[i][j] for j in group) / len(group)
-            if avg_sim >= 0.20 and avg_sim > best_avg_sim:
+            sims = [sim_matrix[i][j] for j in group]
+            avg_sim = sum(sims) / len(sims)
+            min_sim = min(sims)
+
+            # Average linkage must be >= threshold AND the weakest link
+            # must be >= 0.25 to prevent loosely related outliers sneaking in
+            if avg_sim >= SIMILARITY_THRESHOLD and min_sim >= 0.25 and avg_sim > best_avg_sim:
                 best_avg_sim = avg_sim
                 best_group = g_idx
 

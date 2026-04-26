@@ -163,6 +163,7 @@ def list_blindspot_stories(
 ):
     """
     Return stories where coverage is heavily skewed to one political side.
+    Sorted by outlet count (desc) then recency. No minimum outlet threshold.
     side='Left'  → stories dominated by right-wing outlets (left audience missing this)
     side='Right' → stories dominated by left-wing outlets (right audience missing this)
     """
@@ -170,8 +171,10 @@ def list_blindspot_stories(
         db.query(Article.story_id)
         .filter(Article.story_id.isnot(None))
         .group_by(Article.story_id)
-        .having(func.count(func.distinct(Article.outlet_id)) >= 3)
-        .order_by(func.max(Article.scraped_at).desc())
+        .order_by(
+            func.count(func.distinct(Article.outlet_id)).desc(),
+            func.max(Article.scraped_at).desc(),
+        )
         .all()
     )
 
@@ -200,7 +203,8 @@ def list_stories(
     db: Session = Depends(get_db),
 ):
     """
-    Return stories covered by ≥3 outlets, sorted by most recent article.
+    Return all multi-article stories, sorted by outlet count (desc) then recency.
+    Stories with more outlet participation appear first.
     Supports optional ?topic=Politics|Economy|Security|… filter.
     Does NOT include individual articles (use /{story_id} for that).
     """
@@ -208,8 +212,11 @@ def list_stories(
         db.query(Article.story_id)
         .filter(Article.story_id.isnot(None))
         .group_by(Article.story_id)
-        .having(func.count(func.distinct(Article.outlet_id)) >= 3)
-        .order_by(func.max(Article.scraped_at).desc())
+        .having(func.count(Article.article_id) >= 2)  # at least 2 articles
+        .order_by(
+            func.count(func.distinct(Article.outlet_id)).desc(),
+            func.max(Article.scraped_at).desc(),
+        )
         .all()
     )
 

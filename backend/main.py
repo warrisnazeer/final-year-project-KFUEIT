@@ -326,9 +326,9 @@ def startup():
     # Run the initial pipeline in a background thread so it doesn't block server startup
     t = threading.Thread(target=run_pipeline, daemon=True)
     t.start()
-    scheduler.add_job(run_pipeline, "interval", hours=1, id="pipeline")
+    scheduler.add_job(run_pipeline, "interval", minutes=10, id="pipeline")
     scheduler.start()
-    logger.info("Scheduler started — pipeline will run every hour.")
+    logger.info("Scheduler started — pipeline will run every 10 minutes.")
 
 
 @app.on_event("shutdown")

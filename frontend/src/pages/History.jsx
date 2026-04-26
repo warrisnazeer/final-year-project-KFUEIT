@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { getReadingHistory, getBookmarks, getSummaryHistory } from '../api/client'
+import { getBookmarks, getSummaryHistory } from '../api/client'
 
 export default function History() {
-  const [activeTab, setActiveTab] = useState('Read')
-  const [readHistory, setReadHistory] = useState([])
+  const [activeTab, setActiveTab] = useState('Bookmarks')
   const [bookmarks, setBookmarks] = useState([])
   const [summaryHistory, setSummaryHistory] = useState([])
   const [loading, setLoading] = useState(true)
@@ -13,12 +12,10 @@ export default function History() {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const [readRes, bookmarkRes, summaryRes] = await Promise.all([
-          getReadingHistory(50),
+        const [bookmarkRes, summaryRes] = await Promise.all([
           getBookmarks(),
           getSummaryHistory(50)
         ])
-        setReadHistory(readRes.data)
         setBookmarks(bookmarkRes.data)
         setSummaryHistory(summaryRes.data)
       } catch (err) {
@@ -102,7 +99,7 @@ export default function History() {
 
         {/* Tabs */}
         <div className="flex border-b border-brand-border mb-6 overflow-x-auto hide-scrollbar">
-          {['Read', 'Bookmarks', 'AI Analysis'].map(tab => (
+          {['Bookmarks', 'AI Analysis'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -121,7 +118,6 @@ export default function History() {
         </div>
 
         {/* Content */}
-        {activeTab === 'Read' && renderStoryList(readHistory, 'read_at')}
         {activeTab === 'Bookmarks' && renderStoryList(bookmarks, 'bookmarked_at')}
         {activeTab === 'AI Analysis' && renderStoryList(summaryHistory, 'analyzed_at')}
 

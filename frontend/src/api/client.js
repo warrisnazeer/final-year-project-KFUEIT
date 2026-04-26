@@ -41,5 +41,6 @@ export const toggleBookmark      = (id) => api.post(`/user/bookmarks/${id}`)
 export const getBookmarks        = () => api.get('/user/bookmarks')
 export const getBookmarkIds      = () => api.get('/user/bookmarks/ids')
 export const getDiversity        = () => api.get('/user/diversity')
+export const getSummaryHistory   = (limit = 20) => api.get(`/user/summary-history?limit=${limit}`)
 
 export default api

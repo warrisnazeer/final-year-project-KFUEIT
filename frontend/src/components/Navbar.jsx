@@ -55,9 +55,12 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {/* User area */}
           {isLoggedIn ? (
-            <div className="hidden sm:flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500 to-sky-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-                {user?.username?.charAt(0).toUpperCase()}
+            <div className="flex items-center gap-3 relative ml-4">
+              <Link to="/history" className="text-xs font-bold text-slate-500 hover:text-sky-600 transition-colors mr-2">
+                My History
+              </Link>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-500 to-cyan-400 flex items-center justify-center text-white font-black text-sm shadow-sm cursor-pointer" title={user?.username}>
+                {user?.username?.[0]?.toUpperCase() || 'U'}
               </div>
               <span className="text-xs font-medium text-slate-700">{user?.username}</span>
               <button

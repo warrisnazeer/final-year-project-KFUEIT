@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from database import get_db
-from models import User, ReadingHistory, Bookmark, Story, Article
+from models import User, ReadingHistory, Bookmark, Story, Article, StorySummary
 from routers.auth import require_user, get_current_user
 
 router = APIRouter()
@@ -208,3 +208,34 @@ def get_diversity(user: User = Depends(require_user), db: Session = Depends(get_
         "center_pct": round(total_c / total_articles * 100),
         "right_pct": round(total_r / total_articles * 100),
     }
+
+@router.get("/summary-history")
+def get_summary_history(limit: int = 20, db: Session = Depends(get_db)):
+    """Return stories that have been AI Summarized or Deep Bias Analyzed."""
+    # We query StorySummary directly and join Story
+    summaries = (
+        db.query(StorySummary, Story)
+        .join(Story, StorySummary.story_id == Story.story_id)
+        .order_by(StorySummary.story_summary_id.desc())
+        .limit(limit)
+        .all()
+    )
+
+    result = []
+    for summary, story in summaries:
+        outlet_count = (
+            db.query(func.count(func.distinct(Article.outlet_id)))
+            .filter(Article.story_id == story.story_id)
+            .scalar()
+        ) or 0
+
+        result.append({
+            "story_id": story.story_id,
+            "story_title": summary.story_title or "Untitled",
+            "topic_tag": story.topic_tag or "General",
+            "analyzed_at": story.created_at.isoformat() if story.created_at else None, # approximate
+            "outlet_count": outlet_count,
+            "generated_by": summary.generated_by
+        })
+
+    return result

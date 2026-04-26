@@ -9,6 +9,7 @@ import StoryDetail from './pages/StoryDetail'
 import Blindspot from './pages/Blindspot'
 import HowItWorks from './pages/HowItWorks'
 import Login from './pages/Login'
+import History from './pages/History'
 
 function ProtectedRoute({ children }) {
   const { isLoggedIn, loading } = useAuth()
@@ -30,6 +31,7 @@ export default function App() {
               <Route path="/articles"      element={<Articles />} />
               <Route path="/stories"       element={<ProtectedRoute><Stories /></ProtectedRoute>} />
               <Route path="/stories/:id"   element={<ProtectedRoute><StoryDetail /></ProtectedRoute>} />
+              <Route path="/history"       element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/blindspot"      element={<Blindspot />} />
               <Route path="/how-it-works"  element={<HowItWorks />} />
               <Route path="/login"         element={<Login />} />

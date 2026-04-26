@@ -39,9 +39,10 @@ function StatRow({ label, value, color = 'text-slate-900' }) {
   )
 }
 
-function ArticleCard({ article }) {
-  const c = BIAS_5[article.bias_label] || BIAS_5['Center']
-  const score = article.bias_score ?? null
+function ArticleCard({ article, topicTag }) {
+  const isNonPolitical = ['Sports', 'Tech', 'Business'].includes(topicTag)
+  const c = isNonPolitical ? BIAS_5['Center'] : (BIAS_5[article.bias_label] || BIAS_5['Center'])
+  const score = isNonPolitical ? null : (article.bias_score ?? null)
   return (
     <div className={`rounded-xl border p-4 ${c.bg} ${c.border} transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md`}>
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
@@ -54,7 +55,13 @@ function ArticleCard({ article }) {
           )}
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mt-1 sm:mt-0">
-          <BiasBadge label={article.bias_label} score={score} short />
+          {isNonPolitical ? (
+            <span className="bg-stone-100 text-stone-500 text-[10px] font-bold px-2 py-0.5 rounded border border-stone-200">
+              Bias N/A
+            </span>
+          ) : (
+            <BiasBadge label={article.bias_label} score={score} short />
+          )}
           <ToneBadge tone={article.framing_tone} />
           {article.factuality && <FactualityBadge rating={article.factuality} />}
         </div>
@@ -119,6 +126,27 @@ export default function StoryDetail() {
     } catch {}
   }
 
+  async function generateSummary(manual = true) {
+    if (manual) setSummaryErr(null)
+    setSummarizing(true)
+    try {
+      await summarizeStory(id)
+      const res = await getStoryDetail(id)
+      setStory(res.data)
+    } catch (err) {
+      const detail = err?.response?.data?.detail || ''
+      if (manual) {
+        if (err?.response?.status === 503 || detail.toLowerCase().includes('quota')) {
+          setSummaryErr('Analysis Model rate limit reached. Try again in a minute.')
+        } else {
+          setSummaryErr('Could not generate summary. Check Analysis Model API key.')
+        }
+      }
+    } finally {
+      setSummarizing(false)
+    }
+  }
+
   const loadStory = async () => {
     try {
       const res = await getStoryDetail(id)
@@ -131,6 +159,11 @@ export default function StoryDetail() {
         getBookmarkIds().then(r => {
           setBookmarked(r.data.includes(parseInt(id)))
         }).catch(() => {})
+      }
+      
+      // Auto-trigger AI Analysis for Political stories if no summary exists
+      if (!res.data.has_summary && !['Sports', 'Tech', 'Business'].includes(res.data.topic_tag)) {
+        generateSummary(false).catch(() => {})
       }
     } catch {
       setStory(null)
@@ -160,26 +193,7 @@ export default function StoryDetail() {
     }
   }
 
-  const generateSummary = async (manual = true) => {
-    if (manual) setSummaryErr(null)
-    setSummarizing(true)
-    try {
-      await summarizeStory(id)
-      const res = await getStoryDetail(id)
-      setStory(res.data)
-    } catch (err) {
-      const detail = err?.response?.data?.detail || ''
-      if (manual) {
-        if (err?.response?.status === 503 || detail.toLowerCase().includes('quota')) {
-          setSummaryErr('Analysis Model rate limit reached. Try again in a minute.')
-        } else {
-          setSummaryErr('Could not generate summary. Check Analysis Model API key.')
-        }
-      }
-    } finally {
-      setSummarizing(false)
-    }
-  }
+
 
   const handleExpand = async () => {
     setSearching(true)
@@ -359,8 +373,9 @@ export default function StoryDetail() {
         )}
 
         {/* Tab bar */}
-        <div className="flex gap-1 bg-white border border-brand-border rounded-xl p-1.5 w-fit mb-6 overflow-x-auto shadow-sm">
-          {TABS.map(tab => {
+        {!isNonPolitical && (
+          <div className="flex gap-1 bg-white border border-brand-border rounded-xl p-1.5 w-fit mb-6 overflow-x-auto shadow-sm">
+            {TABS.map(tab => {
             const isActive = activeTab === tab
             const activeCls = isActive
               ? tab === 'Left'   ? 'bg-blue-600 text-white shadow-sm'
@@ -378,7 +393,8 @@ export default function StoryDetail() {
               </button>
             )
           })}
-        </div>
+          </div>
+        )}
 
         {/* Pakistani bias context note */}
         {(() => {
@@ -572,7 +588,7 @@ export default function StoryDetail() {
               ) : (
                 <div className="space-y-3">
                   {filteredArticles.map(article => (
-                    <ArticleCard key={article.article_id} article={article} />
+                    <ArticleCard key={article.article_id} article={article} topicTag={story.topic_tag} />
                   ))}
                 </div>
               )}
@@ -609,11 +625,14 @@ export default function StoryDetail() {
                 <StatRow label="Total Articles" value={story.article_count} />
                 <StatRow label="Last Updated"   value={timeAgo(story.latest_date)} />
               </div>
-              <div className="px-4 pb-1">
-                <p className="text-xs font-medium text-brand-muted mb-2">Bias Distribution</p>
-              </div>
-              {/* 5-segment bias bar */}
-              <div className="flex h-7 text-[10px] font-semibold">
+              
+              {!isNonPolitical && (
+                <>
+                  <div className="px-4 pb-1">
+                    <p className="text-xs font-medium text-brand-muted mb-2">Bias Distribution</p>
+                  </div>
+                  {/* 5-segment bias bar */}
+                  <div className="flex h-7 text-[10px] font-semibold">
                 {farLeftPct > 0 && (
                   <div className="bg-blue-700 text-white flex items-center justify-center shrink-0"
                     style={{ width: `${farLeftPct}%` }}>
@@ -645,6 +664,9 @@ export default function StoryDetail() {
                   </div>
                 )}
               </div>
+              </>
+              )}
+              
               <div className="p-3 bg-stone-50 border-t border-brand-border">
                 <button
                   onClick={handleExpand}
@@ -723,12 +745,14 @@ export default function StoryDetail() {
             )}
 
             {/* Coverage Spectrum */}
-            <div className="bg-white border border-brand-border rounded-xl p-4 shadow-sm">
-              <h3 className="text-xs uppercase tracking-wider text-brand-muted font-semibold mb-3">
-                Coverage Spectrum
-              </h3>
-              <CoverageBar outlets={story.outlet_positions || []} />
-            </div>
+            {!isNonPolitical && (
+              <div className="bg-white border border-brand-border rounded-xl p-4 shadow-sm">
+                <h3 className="text-xs uppercase tracking-wider text-brand-muted font-semibold mb-3">
+                  Coverage Spectrum
+                </h3>
+                <CoverageBar outlets={story.outlet_positions || []} />
+              </div>
+            )}
 
             {/* Deep Bias button */}
             {story.topic_tag !== 'Sports' && story.topic_tag !== 'Tech' && story.topic_tag !== 'Business' && (

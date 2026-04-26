@@ -132,14 +132,18 @@ export default function StoryFeedCard({ story, featured = false }) {
 
       {/* 5-segment Ground News style bias bar - Made sleek and thin */}
       <div className="flex h-1.5 w-full opacity-90 group-hover:opacity-100 transition-opacity">
-        {segments.map((seg, i) =>
-          seg.pct > 0 ? (
-            <div
-              key={i}
-              className={`${seg.color} transition-all`}
-              style={{ width: `${seg.pct}%`, flexGrow: seg.pct === 0 ? 0 : undefined }}
-            />
-          ) : null
+        {['Sports', 'Tech', 'Business'].includes(story.topic_tag) ? (
+          <div className="bg-stone-200 w-full" title="Political bias not applicable to this topic" />
+        ) : (
+          segments.map((seg, i) =>
+            seg.pct > 0 ? (
+              <div
+                key={i}
+                className={`${seg.color} transition-all`}
+                style={{ width: `${seg.pct}%`, flexGrow: seg.pct === 0 ? 0 : undefined }}
+              />
+            ) : null
+          )
         )}
       </div>
     </div>

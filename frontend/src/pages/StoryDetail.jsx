@@ -351,9 +351,33 @@ export default function StoryDetail() {
           <div className="space-y-5 min-w-0">
 
             {activeTab !== 'Bias Comparison' && summarizing && (
-              <div className="bg-white border border-brand-border rounded-xl p-5 flex items-center gap-3 text-brand-muted shadow-sm">
-                <div className="w-5 h-5 border-2 border-sky-500 border-t-transparent rounded-full animate-spin shrink-0" />
-                <span className="text-sm">Generating AI summary&hellip;</span>
+              <div className="bg-white border border-brand-border rounded-xl p-8 flex flex-col items-center justify-center gap-4 text-brand-muted shadow-sm animate-pulse">
+                <div className="w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin shrink-0" />
+                <div className="text-center">
+                  <span className="text-lg font-bold text-slate-800 block mb-1">Analyzing coverage...</span>
+                  <span className="text-xs">Processing multiple viewpoints for a balanced summary.</span>
+                </div>
+              </div>
+            )}
+
+            {activeTab !== 'Bias Comparison' && !summary?.what_happened && !summarizing && (
+              <div className="bg-white border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center shadow-sm">
+                <div className="w-16 h-16 bg-sky-50 text-sky-600 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl">
+                  &#10022;
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">No AI Analysis yet</h3>
+                <p className="text-slate-500 text-sm max-w-sm mx-auto mb-8">
+                  Get a neutral summary, key facts, and a bias comparison by running our AI analysis engine.
+                </p>
+                <button
+                  onClick={() => generateSummary(true)}
+                  className="px-8 py-3 bg-gradient-to-r from-sky-600 to-blue-700 text-white rounded-xl font-bold 
+                             shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:scale-[1.02] active:scale-[0.98] 
+                             transition-all cursor-pointer"
+                >
+                  Generate AI Analysis
+                </button>
+                {summaryErr && <p className="text-red-500 text-xs mt-4">{summaryErr}</p>}
               </div>
             )}
 
@@ -449,8 +473,16 @@ export default function StoryDetail() {
                   )}
                 </div>
               ) : (
-                <div className="bg-white border border-brand-border rounded-xl p-5 text-center text-brand-muted text-sm">
-                  Generate an AI summary first to see the bias comparison.
+                <div className="bg-white border border-brand-border rounded-xl p-10 text-center text-brand-muted">
+                  <div className="text-3xl mb-4 opacity-30">&#9680;</div>
+                  <p className="text-sm mb-6">Generate an AI summary first to see the bias comparison.</p>
+                  <button
+                    onClick={() => generateSummary(true)}
+                    disabled={summarizing}
+                    className="px-6 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-slate-700 transition-colors cursor-pointer"
+                  >
+                    {summarizing ? 'Generating...' : 'Generate Analysis'}
+                  </button>
                 </div>
               )
             )}

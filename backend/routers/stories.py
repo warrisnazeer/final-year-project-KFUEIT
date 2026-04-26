@@ -212,7 +212,7 @@ def list_stories(
         db.query(Article.story_id)
         .filter(Article.story_id.isnot(None))
         .group_by(Article.story_id)
-        .having(func.count(Article.article_id) >= 2)  # at least 2 articles
+        .having(func.count(func.distinct(Article.outlet_id)) >= 2)  # at least 2 distinct outlets
         .order_by(
             func.count(func.distinct(Article.outlet_id)).desc(),
             func.max(Article.scraped_at).desc(),

@@ -24,7 +24,7 @@ def get_stats(db: Session = Depends(get_db)):
         db.query(Article.story_id)
         .filter(Article.story_id.isnot(None))
         .group_by(Article.story_id)
-        .having(func.count(Article.article_id) > 1)
+        .having(func.count(func.distinct(Article.outlet_id)) >= 2)
         .count()
     )
 

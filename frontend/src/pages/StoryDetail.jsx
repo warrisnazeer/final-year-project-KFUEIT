@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext'
 const LEFT_LABELS  = new Set(['Far Left',  'Lean Left',  'Left'])
 const RIGHT_LABELS = new Set(['Far Right', 'Lean Right', 'Right'])
 
-const TABS = ['All', 'Left', 'Center', 'Right', 'Bias Comparison']
+const TABS = ['All', 'Bias Comparison']
 
 function timeAgo(iso) {
   if (!iso) return ''

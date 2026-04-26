@@ -138,15 +138,16 @@ def seed_outlets():
 
 def seed_user():
     """Create the default user account if it doesn't exist."""
-    from passlib.hash import bcrypt
+    import bcrypt
     db = SessionLocal()
     try:
         existing = db.query(User).filter(User.username == "amjad").first()
         if not existing:
+            hashed = bcrypt.hashpw(b"newsnarrative2026", bcrypt.gensalt()).decode('utf-8')
             db.add(User(
                 username="amjad",
                 email="amjad@newsnarrative.com",
-                password_hash=bcrypt.hash("newsnarrative2026"),
+                password_hash=hashed,
             ))
             db.commit()
             logger.info("Default user 'amjad' created.")

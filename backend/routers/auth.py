@@ -11,7 +11,7 @@ import logging
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
-from passlib.hash import bcrypt
+import bcrypt
 from pydantic import BaseModel
 
 from database import get_db
@@ -72,7 +72,15 @@ def require_user(authorization: str = Header(...), db: Session = Depends(get_db)
 @router.post("/login")
 def login(body: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == body.username).first()
-    if not user or not bcrypt.verify(body.password, user.password_hash):
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+    try:
+        if not bcrypt.checkpw(body.password.encode('utf-8'), user.password_hash.encode('utf-8')):
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+    except ValueError:
+        # Catch errors if stored hash is somehow invalid format
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
     token = create_token(user.user_id, user.username)

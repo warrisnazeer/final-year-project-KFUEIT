@@ -415,7 +415,7 @@ def _run_story_summary(story_id: int, db: Session):
 
 @router.post("/{story_id}/deep-bias", response_model=dict)
 def run_deep_bias(story_id: int, db: Session = Depends(get_db)):
-    story = db.query(Story).filter(Story.id == story_id).first()
+    story = db.query(Story).filter(Story.story_id == story_id).first()
     if not story:
         raise HTTPException(status_code=404, detail="Story not found")
 
@@ -428,7 +428,7 @@ def run_deep_bias(story_id: int, db: Session = Depends(get_db)):
     for a in articles[:10]:
         outlet_name = a.outlet.name if a.outlet else "Unknown"
         article_dicts.append({
-            "id": str(a.id),
+            "id": str(a.article_id),
             "title": a.title,
             "outlet": outlet_name,
             "content": (a.content or "")[:200]
@@ -441,7 +441,7 @@ def run_deep_bias(story_id: int, db: Session = Depends(get_db)):
 
     # Track changes
     for a in articles:
-        str_id = str(a.id)
+        str_id = str(a.article_id)
         if str_id in scores:
             try:
                 ai_score = float(scores[str_id])

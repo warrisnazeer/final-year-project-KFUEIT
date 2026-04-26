@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { getStoryDetail, summarizeStory, expandStory } from '../api/client'
+import { getStoryDetail, summarizeStory, expandStory, runDeepBias } from '../api/client'
 import { BiasBadge, ToneBadge, FactualityBadge, BIAS_5 } from '../components/Badges'
 import CoverageBar from '../components/CoverageBar'
 
@@ -90,6 +90,8 @@ export default function StoryDetail() {
   const [summarizing, setSummarizing] = useState(false)
   const [searching, setSearching]     = useState(false)
   const [summaryErr, setSummaryErr]   = useState(null)
+  const [deepBiasing, setDeepBiasing] = useState(false)
+  const [deepBiasErr, setDeepBiasErr] = useState(null)
   const [activeTab, setActiveTab]     = useState('All')
 
   const [copied, setCopied] = useState(false)
@@ -111,6 +113,21 @@ export default function StoryDetail() {
       setStory(null)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDeepBias = async () => {
+    setDeepBiasErr(null)
+    setDeepBiasing(true)
+    try {
+      const res = await runDeepBias(id)
+      setStory(res.data)
+      trackDiversity(res.data)
+    } catch (err) {
+      setDeepBiasErr("Narrative Engine failed or limit reached.")
+      console.error(err)
+    } finally {
+      setDeepBiasing(false)
     }
   }
 
@@ -658,6 +675,26 @@ export default function StoryDetail() {
               </h3>
               <CoverageBar outlets={story.outlet_positions || []} />
             </div>
+
+            {/* Deep Bias button */}
+            {story.topic_tag !== 'Sports' && story.topic_tag !== 'Tech' && story.topic_tag !== 'Business' && (
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-4 shadow-sm">
+                <h3 className="text-[10px] uppercase tracking-widest text-indigo-800 font-bold mb-2">
+                  Advanced Tools
+                </h3>
+                <p className="text-xs text-indigo-600 mb-3 leading-relaxed">
+                  Override basic metrics with contextual Narrative Engine scoring.
+                </p>
+                <button
+                  onClick={handleDeepBias}
+                  disabled={deepBiasing}
+                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-md transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  {deepBiasing ? 'Analyzing...' : 'Run Deep Bias Analysis'}
+                </button>
+                {deepBiasErr && <p className="text-red-500 text-[10px] mt-2 text-center">{deepBiasErr}</p>}
+              </div>
+            )}
 
             {/* Regenerate button */}
             <button

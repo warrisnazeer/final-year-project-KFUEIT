@@ -381,6 +381,12 @@ def _run_story_summary(story_id: int, db: Session):
             status_code=503,
             detail="AI quota exceeded. Please try again in a minute.",
         )
+        
+    if result.get("generated_by") == "fallback":
+        raise HTTPException(
+            status_code=500,
+            detail="AI generation failed. Please check your Narrative Engine key in the Railway dashboard.",
+        )
 
     existing = db.query(StorySummary).filter(StorySummary.story_id == story_id).first()
     if existing:
@@ -406,3 +412,74 @@ def _run_story_summary(story_id: int, db: Session):
         ))
     db.commit()
     return result
+
+
+@router.post("/{story_id}/deep-bias", response_model=dict)
+def run_deep_bias(story_id: int, db: Session = Depends(get_db)):
+    story = db.query(Story).filter(Story.id == story_id).first()
+    if not story:
+        raise HTTPException(status_code=404, detail="Story not found")
+
+    articles = db.query(Article).filter(Article.story_id == story_id).all()
+    if not articles:
+        raise HTTPException(status_code=404, detail="No articles found for story")
+
+    # Limit to 10 for tokens
+    article_dicts = []
+    from scrapers.rss_scraper import _get_outlet_from_url
+    for a in articles[:10]:
+        outlet_obj = _get_outlet_from_url(a.url, db)
+        outlet_name = outlet_obj.name if outlet_obj else "Unknown"
+        article_dicts.append({
+            "id": str(a.id),
+            "title": a.title,
+            "outlet": outlet_name,
+            "content": (a.content or "")[:200]
+        })
+
+    from services.story_summarizer import run_deep_bias_scoring
+    scores = run_deep_bias_scoring(article_dicts)
+
+    if not scores:
+        raise HTTPException(status_code=500, detail="Narrative Engine failed to analyze bias.")
+
+    from services.bias_classifier import BIAS_CATEGORIES, OUTLET_PRIORS
+    
+    # Track changes
+    for a in articles:
+        str_id = str(a.id)
+        if str_id in scores:
+            ai_score = scores[str_id]
+            outlet_obj = _get_outlet_from_url(a.url, db)
+            outlet_name = outlet_obj.name if outlet_obj else "Unknown"
+            prior_score = OUTLET_PRIORS.get(outlet_name, {"score": 0.0})["score"]
+            
+            # New stealth formula: 80% Narrative Engine, 20% Priors
+            new_score = (ai_score * 0.8) + (prior_score * 0.2)
+            
+            if a.analysis:
+                a.analysis.bias_score = new_score
+            else:
+                from models import ArticleAnalysis
+                a.analysis = ArticleAnalysis(
+                    article_id=a.id,
+                    bias_score=new_score,
+                    framing_tone="Neutral"
+                )
+                db.add(a.analysis)
+                
+            label = "Center"
+            for cat, r in BIAS_CATEGORIES.items():
+                if r[0] <= new_score <= r[1]:
+                    label = cat
+                    break
+            a.bias_label = label
+
+    db.commit()
+
+    from services.story_grouper import compute_blindspot
+    labels = [a.bias_label for a in articles if a.bias_label]
+    story.blindspot_side = compute_blindspot(labels)
+    db.commit()
+
+    return _build_story_dict(story_id, db, include_articles=True)

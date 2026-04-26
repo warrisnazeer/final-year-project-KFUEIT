@@ -35,8 +35,8 @@ def group_articles(articles: list) -> dict:
     if len(articles) == 1:
         return {articles[0]["article_id"]: 0}
 
-    # Use titles and more content context to improve matching accuracy
-    texts = [f"{a['title']} {str(a.get('content', ''))[:400]}" for a in articles]
+    # Use titles and a snippet of content to improve matching context
+    texts = [f"{a['title']} {str(a.get('content', ''))[:200]}" for a in articles]
 
     try:
         vectorizer = TfidfVectorizer(

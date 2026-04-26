@@ -213,15 +213,14 @@ def classify_article(title: str, content: str, outlet_name: str) -> dict:
         zs_raw = _zero_shot_api(text)
 
     if zs_raw:
-        # Full hybrid: 50% NLP + 30% keywords + 20% prior
+        # Full hybrid: 60% NLP + 30% keywords + 10% prior
         zs_score = zs_raw.get("right", 0.33) - zs_raw.get("left", 0.33)
-        final_score = (0.50 * zs_score) + (0.30 * kw_score) + (0.20 * prior)
+        final_score = (0.60 * zs_score) + (0.30 * kw_score) + (0.10 * prior)
         confidence = max(zs_raw.get("left", 0), zs_raw.get("center", 0), zs_raw.get("right", 0))
     else:
-        # Keyword-only fallback: 50% keywords + 50% prior
-        # This ensures known biased outlets aren't 'stuck' in Center if text is neutral
-        final_score = (0.50 * kw_score) + (0.50 * prior)
-        confidence = 0.60 
+        # Keyword-only fallback: 70% keywords + 30% prior
+        final_score = (0.70 * kw_score) + (0.30 * prior)
+        confidence = 0.55  # lower confidence without AI model
 
     # Clamp to [-1, 1]
     final_score = max(-1.0, min(1.0, final_score))

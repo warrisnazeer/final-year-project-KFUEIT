@@ -132,7 +132,7 @@ export default function StoryFeedCard({ story, featured = false }) {
 
       {/* 5-segment Ground News style bias bar - Made sleek and thin */}
       <div className="flex h-1.5 w-full opacity-90 group-hover:opacity-100 transition-opacity">
-        {['Sports', 'Tech', 'Business'].includes(story.topic_tag) ? (
+        {['Sports', 'Tech', 'Technology', 'Business', 'Entertainment'].includes(story.topic_tag) ? (
           <div className="bg-stone-200 w-full" title="Political bias not applicable to this topic" />
         ) : (
           segments.map((seg, i) =>

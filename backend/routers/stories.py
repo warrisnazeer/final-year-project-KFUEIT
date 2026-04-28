@@ -428,6 +428,15 @@ def run_deep_bias(story_id: int, db: Session = Depends(get_db)):
     if not story:
         raise HTTPException(status_code=404, detail="Story not found")
 
+    # Block deep bias for non-political categories
+    NON_POLITICAL = {"Sports", "Technology", "Business", "Tech", "Entertainment"}
+    topic = getattr(story, "topic_tag", "General") or "General"
+    if topic in NON_POLITICAL:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Political bias analysis is not applicable to {topic} stories."
+        )
+
     articles = db.query(Article).filter(Article.story_id == story_id).all()
     if not articles:
         raise HTTPException(status_code=404, detail="No articles found for story")

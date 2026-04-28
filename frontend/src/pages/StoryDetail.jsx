@@ -40,7 +40,7 @@ function StatRow({ label, value, color = 'text-slate-900' }) {
 }
 
 function ArticleCard({ article, topicTag }) {
-  const isNonPolitical = ['Sports', 'Tech', 'Business'].includes(topicTag)
+  const isNonPolitical = ['Sports', 'Tech', 'Technology', 'Business', 'Entertainment'].includes(topicTag)
   const c = isNonPolitical ? BIAS_5['Center'] : (BIAS_5[article.bias_label] || BIAS_5['Center'])
   const score = isNonPolitical ? null : (article.bias_score ?? null)
   return (
@@ -162,7 +162,7 @@ export default function StoryDetail() {
       }
       
       // Auto-trigger AI Analysis for Political stories if no summary exists
-      if (!res.data.has_summary && !['Sports', 'Tech', 'Business'].includes(res.data.topic_tag)) {
+      if (!res.data.has_summary && !['Sports', 'Tech', 'Technology', 'Business', 'Entertainment'].includes(res.data.topic_tag)) {
         generateSummary(false).catch(() => {})
       }
     } catch {
@@ -253,7 +253,7 @@ export default function StoryDetail() {
   const farRightPct  = 100 - farLeftPct - leanLeftPct - centerPct - leanRightPct
 
   const summary = story.summary
-  const isNonPolitical = ['Sports', 'Tech', 'Business'].includes(story.topic_tag)
+  const isNonPolitical = ['Sports', 'Tech', 'Technology', 'Business', 'Entertainment'].includes(story.topic_tag)
   const bulletFacts = summary?.neutral_summary
     ? summary.neutral_summary.split('|').map(f => f.trim()).filter(Boolean)
     : []
@@ -756,7 +756,7 @@ export default function StoryDetail() {
             )}
 
             {/* Deep Bias button */}
-            {story.topic_tag !== 'Sports' && story.topic_tag !== 'Tech' && story.topic_tag !== 'Business' && (
+            {!['Sports', 'Tech', 'Technology', 'Business', 'Entertainment'].includes(story.topic_tag) && (
               <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-4 shadow-sm">
                 <h3 className="text-[10px] uppercase tracking-widest text-indigo-800 font-bold mb-2">
                   Advanced Tools

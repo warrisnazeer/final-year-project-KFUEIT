@@ -149,10 +149,23 @@ def seed_user():
                 email="amjad@newsnarrative.com",
                 password_hash=hashed,
             ))
-            db.commit()
             logger.info("Default user 'amjad' created.")
         else:
             logger.info("User 'amjad' already exists.")
+
+        admin_existing = db.query(User).filter(User.username == "admin").first()
+        if not admin_existing:
+            admin_hashed = bcrypt.hashpw(b"newsnarrative2026", bcrypt.gensalt()).decode('utf-8')
+            db.add(User(
+                username="admin",
+                email="admin@newsnarrative.com",
+                password_hash=admin_hashed,
+            ))
+            logger.info("Default user 'admin' created.")
+        else:
+            logger.info("User 'admin' already exists.")
+
+        db.commit()
     finally:
         db.close()
 

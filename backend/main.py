@@ -376,6 +376,33 @@ def trigger_scrape():
     return {"message": "Pipeline triggered in background."}
 
 
+@app.get("/api/scrape-test", tags=["Admin"])
+def scrape_test():
+    """
+    Synchronously test-scrapes the first 3 outlets and returns article counts.
+    Does NOT write anything to the DB. Use to verify RSS network access from Railway.
+    """
+    from scrapers.rss_scraper import fetch_outlet, OUTLETS
+    results = []
+    for outlet in OUTLETS[:5]:
+        try:
+            articles = fetch_outlet(outlet, fetch_full=False)
+            results.append({
+                "outlet": outlet["name"],
+                "articles_fetched": len(articles),
+                "sample_title": articles[0]["title"] if articles else None,
+                "error": None,
+            })
+        except Exception as e:
+            results.append({
+                "outlet": outlet["name"],
+                "articles_fetched": 0,
+                "sample_title": None,
+                "error": str(e),
+            })
+    return {"results": results, "total": sum(r["articles_fetched"] for r in results)}
+
+
 def _reanalyze_all():
     """Re-run AI analysis on every article in DB (overwrites existing scores)."""
     logger.info("Re-analysis started...")

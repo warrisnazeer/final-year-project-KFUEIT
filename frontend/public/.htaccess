@@ -1,0 +1,41 @@
+# Enable Rewrite Engine for SPA routing
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # If the request is not for an existing file
+  RewriteCond %{REQUEST_FILENAME} !-f
+  # If the request is not for an existing directory
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # Route all requests to index.html (React SPA)
+  RewriteRule ^ index.html [QSA,L]
+</IfModule>
+
+# Set default directory index
+DirectoryIndex index.html
+
+# Prevent directory browsing
+Options -Indexes
+
+# Set proper MIME types
+<IfModule mod_mime.c>
+  AddType application/javascript .js .mjs
+  AddType text/css .css
+  AddType image/svg+xml .svg
+</IfModule>
+
+# Enable GZIP compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# Cache static assets (1 year for hashed files)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>

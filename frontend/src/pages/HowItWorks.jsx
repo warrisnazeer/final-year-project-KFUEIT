@@ -170,7 +170,7 @@ export default function HowItWorks() {
         <Section icon="✨" title="Step 5 — AI Story Analysis">
           <Card>
             <p className="text-stone-700 text-sm leading-relaxed mb-4">
-              Each story cluster is analyzed by <strong className="text-stone-900">Google Gemini 1.5 Flash</strong>,
+              Each story cluster is analyzed by <strong className="text-stone-900">our AI engine</strong>,
               which reads all the headlines and content snippets and produces a structured 7-field analysis:
             </p>
             <div className="space-y-2">

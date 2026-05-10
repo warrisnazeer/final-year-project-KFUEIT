@@ -202,7 +202,7 @@ def fetch_outlet(outlet: dict, fetch_full: bool = False) -> list:
         if feed.bozo and not feed.entries:
             logger.warning(f"Feed parse warning for {outlet['name']}: {feed.bozo_exception}")
 
-        for entry in feed.entries[:35]:
+        for entry in feed.entries:
             title = (entry.get("title") or "").strip()
             url = (entry.get("link") or "").strip()
 

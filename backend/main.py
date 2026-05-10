@@ -34,7 +34,14 @@ Base.metadata.create_all(bind=engine)
 
 
 def migrate_db():
-    """Add new columns to existing tables without losing data (SQLite ALTER TABLE)."""
+    """Add new columns to existing tables without losing data (SQLite ALTER TABLE).
+    Skipped automatically when running on PostgreSQL (Railway) — schema is managed by create_all.
+    """
+    database_url = os.getenv("DATABASE_URL", "sqlite:///./news_narrative.db")
+    if not database_url.startswith("sqlite"):
+        logger.info("Non-SQLite DB detected — skipping SQLite migration.")
+        return
+
     import sqlite3
     db_path = os.path.join(os.path.dirname(__file__), "news_narrative.db")
     conn = sqlite3.connect(db_path)
@@ -267,7 +274,7 @@ def run_pipeline():
     db = SessionLocal()
 
     try:
-        raw_articles = scrape_all_outlets(fetch_full=True)
+        raw_articles = scrape_all_outlets(fetch_full=False)  # Fast mode: RSS summaries only (no per-article HTTP fetch)
         new_count = 0
 
         for art in raw_articles:
@@ -406,6 +413,27 @@ def _reanalyze_all():
     except Exception as e:
         logger.error(f"Re-analysis error: {e}", exc_info=True)
         db.rollback()
+    finally:
+        db.close()
+
+
+@app.get("/api/status", tags=["Health"])
+def status():
+    """Diagnostic endpoint — shows DB counts for quick health check."""
+    db = SessionLocal()
+    try:
+        from models import Article, Story, NewsOutlet
+        outlet_count = db.query(NewsOutlet).count()
+        article_count = db.query(Article).count()
+        story_count = db.query(Story).count()
+        latest = db.query(Article).order_by(Article.scraped_at.desc()).first()
+        return {
+            "outlets": outlet_count,
+            "articles": article_count,
+            "stories": story_count,
+            "latest_article_scraped_at": latest.scraped_at.isoformat() if latest else None,
+            "database_url_type": "postgresql" if os.getenv("DATABASE_URL", "").startswith("postgresql") else "sqlite",
+        }
     finally:
         db.close()
 

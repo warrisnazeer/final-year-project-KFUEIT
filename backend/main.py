@@ -432,6 +432,18 @@ def retag_stories():
     t.start()
     return {"message": "Re-tagging all stories in background. Check /api/status after ~10s."}
 
+@app.post("/api/reset-db", tags=["Admin"])
+def reset_database():
+    """DANGEROUS: Drops and recreates all database tables. Starts fresh."""
+    from database import engine
+    import models
+    try:
+        models.Base.metadata.drop_all(bind=engine)
+        models.Base.metadata.create_all(bind=engine)
+        return {"message": "Database wiped and recreated successfully."}
+    except Exception as e:
+        logger.error(f"Failed to reset DB: {e}")
+        return {"error": str(e)}
 
 def _reanalyze_all():
     """Re-run AI analysis on every article in DB (overwrites existing scores)."""

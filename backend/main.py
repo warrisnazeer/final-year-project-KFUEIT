@@ -402,6 +402,36 @@ def scrape_test():
             })
     return {"results": results, "total": sum(r["articles_fetched"] for r in results)}
 
+@app.post("/api/retag", tags=["Admin"])
+def retag_stories():
+    """Re-run topic tagging on ALL existing stories using the updated keyword lists."""
+    import threading
+    def _retag():
+        from services.topic_tagger import tag_story_topic, compute_blindspot
+        db = SessionLocal()
+        try:
+            all_stories = db.query(Story).all()
+            updated = 0
+            for story in all_stories:
+                articles = db.query(Article).filter(Article.story_id == story.story_id).all()
+                if not articles:
+                    continue
+                titles = [a.title for a in articles]
+                labels = [a.bias_label or "Center" for a in articles]
+                story.topic_tag = tag_story_topic(titles)
+                story.blindspot_side = compute_blindspot(labels)
+                updated += 1
+            db.commit()
+            logger.info(f"Re-tagged {updated} stories.")
+        except Exception as e:
+            logger.error(f"Re-tag error: {e}", exc_info=True)
+            db.rollback()
+        finally:
+            db.close()
+    t = threading.Thread(target=_retag, daemon=True)
+    t.start()
+    return {"message": "Re-tagging all stories in background. Check /api/status after ~10s."}
+
 
 def _reanalyze_all():
     """Re-run AI analysis on every article in DB (overwrites existing scores)."""

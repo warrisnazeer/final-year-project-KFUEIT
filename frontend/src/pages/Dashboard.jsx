@@ -5,7 +5,7 @@ import StoryFeedCard from '../components/StoryFeedCard'
 import SkeletonCard from '../components/SkeletonCard'
 import { useAuth } from '../context/AuthContext'
 
-const TOPICS = ['All', 'Politics', 'Economy', 'Security', 'International', 'Sports', 'Business', 'Ceasefire']
+const TOPICS = ['All', 'Politics', 'Economy', 'Security', 'International', 'Sports', 'Business', 'Ceasefire', 'Legal', 'Health']
 
 // Read diversity from localStorage
 function readDiversity() {

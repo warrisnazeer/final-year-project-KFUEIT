@@ -7,7 +7,6 @@ import Articles from './pages/Articles'
 import Stories from './pages/Stories'
 import StoryDetail from './pages/StoryDetail'
 import Blindspot from './pages/Blindspot'
-import HowItWorks from './pages/HowItWorks'
 import Login from './pages/Login'
 import History from './pages/History'
 
@@ -33,7 +32,6 @@ export default function App() {
               <Route path="/stories/:id"   element={<StoryDetail />} />
               <Route path="/history"       element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/blindspot"      element={<Blindspot />} />
-              <Route path="/how-it-works"  element={<HowItWorks />} />
               <Route path="/login"         element={<Login />} />
             </Routes>
           </main>

@@ -7,7 +7,6 @@ const navLinks = [
   { to: '/blindspot', label: 'Blindspot' },
   { to: '/outlets', label: 'Outlets' },
   { to: '/articles', label: 'Articles' },
-  { to: '/how-it-works', label: 'How It Works' },
 ]
 
 export default function Navbar() {
@@ -21,10 +20,6 @@ export default function Navbar() {
       return isActive
         ? 'bg-orange-100 text-orange-700 border border-orange-200 shadow-sm'
         : 'text-orange-600 hover:text-orange-700 hover:bg-orange-50'
-    if (label === 'How It Works')
-      return isActive
-        ? 'bg-teal-100 text-teal-700 border border-teal-200 shadow-sm'
-        : 'text-teal-600 hover:text-teal-700 hover:bg-teal-50'
     return isActive
       ? 'bg-sky-100 text-sky-700 border border-sky-200 shadow-sm'
       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
